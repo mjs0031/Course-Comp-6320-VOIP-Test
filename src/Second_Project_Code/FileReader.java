@@ -4,12 +4,12 @@ package Second_Project_Code;
 // Java Package Support //
 // { Not Applicable }
 
-//Internal Package Support //
+// Internal Package Support //
 // { Not Applicable }
 
 /**
  * 
- * Second_Project_Code/pacakge-info.java
+ * Second_Project_Code/FileReader.java
  * 
  * @author(s)	: Ian Middleton, Zach Ogle, Matthew J Swann
  * @version  	: 1.0
@@ -20,4 +20,14 @@ package Second_Project_Code;
  * Second_Project_Code PACKAGE :: Source code for Comp 6360: Wireless & Mobile Networks
  * 	               Assignment 2 :: VOIP
  * 
+ * Source code for Comp 6360: Wireless & Mobile Networks. This code
+ * encompasses the file reader which will read the configuration file 
+ * for setting up the network.
+ *  
+ *  ***INCOMPLETE***
  */
+
+public class FileReader{
+	
+} // end FileReader class
+

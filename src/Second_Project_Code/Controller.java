@@ -14,7 +14,7 @@ import javax.sound.sampled.LineUnavailableException;
  * Second_Project_Code/Controller.java
  * 
  * @author(s)	: Ian Middleton, Zach Ogle, Matthew J Swann
- * @version  	: 2.0
+ * @version  	: 1.0
  * Last Update	: 2013-03-18
  * Update By	: Ian R Middleton
  * 
