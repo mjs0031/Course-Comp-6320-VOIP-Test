@@ -24,10 +24,30 @@ package Second_Project_Code;
  * encompasses the file reader which will read the configuration file 
  * for setting up the network.
  *  
- *  ***INCOMPLETE***
  */
 
 public class FileReader{
+	
+	/**
+	 * Reads the lines from a file and returns them in an array.
+	 * 
+	 * @param fileLoc			: A string of the location of the file to be read.
+	 * @return					: An array holding all the lines in the file.
+	 */
+	public string[] getLines(string fileLoc){
+		File file = new File(fileLoc);
+		string[] lines = new string[];
+		string line;
+		int lineCount = 0;
+		BufferedReader reader = new BufferedReader(new FileReader(file));
+		
+		while((line = reader.readLine()) != null){
+			lines[lineCount] = line;
+			lineCount++;
+		}
+		
+		return lines;
+	} // end getLines()
 	
 } // end FileReader class
 

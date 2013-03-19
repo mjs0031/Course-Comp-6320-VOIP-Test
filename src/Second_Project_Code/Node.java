@@ -24,7 +24,6 @@ package Second_Project_Code;
  * encompasses the node object which will store all the information regarding
  * each node in the network.
  *  
- *  ***INCOMPLETE***
  */
 
 public class Node{
