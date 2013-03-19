@@ -1,9 +1,9 @@
 // Package Declaration //
 package Second_Project_Code;
 
-import java.io.IOException;
 // Java Package Support //
 import java.util.ArrayList;
+import java.io.IOException;
 
 // Internal Package Support //
 // { Not Applicable } 
@@ -25,12 +25,25 @@ import java.util.ArrayList;
  * encompasses the node object which will store all the information regarding
  * each node in the network.
  *  
+ *  *** INCOMPLETE ***
+ *  
  */
 
 public class Node{
 	int number, port, x, y;
 	String address;
-	ArrayList<Node> links = null;
+	ArrayList<Node> links = new ArrayList<Node>();
+	
+	/**
+	 * Constructor for the Node class.
+	 */
+	public Node(){
+		number = 0;
+		port = 0;
+		x = 0;
+		y = 0;
+		address = "";
+	} // end Node()
 	
 	/**
      * Constructor for the Node class.
@@ -115,10 +128,63 @@ public class Node{
 		this.y = y;
 	} // end setY()
 	
-	public static void setup() throws IOException{
-		ArrayList<String> lines = ConfigReader.getLines("/home/ian/Documents/configuration");
-		System.out.println(lines.get(0));
-	}
+	/**
+	 * Sets up the Node for this execution by reading in the configuration file,
+	 * setting its variables according to which node it is, and then creating Node
+	 * objects for all nodes it is linked to.
+	 * 
+	 * @param fileLoc		: A string designating the location of the configuration file.
+	 * @param nodeNumber	: The number of this node.
+	 * @throws IOException	: General IOException for if the file is not found.
+	 */
+	public void setup(String fileLoc, int nodeNumber) throws IOException{
+		ArrayList<String> lines = ConfigReader.getLines(fileLoc);
+		ArrayList<Node> otherNodes = new ArrayList<Node>();
+		ArrayList<Integer> toBeLinked = new ArrayList<Integer>();
+		int number, port, x, y;
+		String address;
+		
+		for(int i=0; i < lines.size(); i++){
+			String[] parts = lines.get(i).split("\\s+");
+			if(nodeNumber == Integer.parseInt(parts[1])){
+				this.number = Integer.parseInt(parts[1]);
+				this.address = parts[2].replace(",", "");
+				this.port = Integer.parseInt(parts[3]);
+				this.x = Integer.parseInt(parts[4]);
+				this.y = Integer.parseInt(parts[5]);
+				for(int j = 7; j < parts.length; j++){
+					toBeLinked.add(Integer.parseInt(parts[j]));
+				}
+			} // end if
+			else{
+				number = Integer.parseInt(parts[1]);
+				address = parts[2];
+				port = Integer.parseInt(parts[3]);
+				x = Integer.parseInt(parts[4]);
+				y = Integer.parseInt(parts[5]);
+				otherNodes.add(new Node(number, address, port, x, y));
+			} // end else
+		} // end for
+		
+		if(toBeLinked.size() > 0){
+			for(int i=0; i < toBeLinked.size(); i++){
+				for(int j = 0; j < otherNodes.size(); j++){
+					if(toBeLinked.get(i) == otherNodes.get(j).getNumber()){
+						links.add(otherNodes.get(j));
+						break;
+					} // end if
+				} // end for
+			} // end for
+		} // end if
+	} // end setup()
+	
+	public void startSending(){
+		
+	} // end startSending()
+	
+	public void startReceiving(){
+		
+	} // end startReceiving()
 	
 } // end Node class
 

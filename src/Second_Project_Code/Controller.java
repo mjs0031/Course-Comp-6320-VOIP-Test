@@ -14,8 +14,8 @@ import javax.sound.sampled.LineUnavailableException;
  * Second_Project_Code/Controller.java
  * 
  * @author(s)	: Ian Middleton, Zach Ogle, Matthew J Swann
- * @version  	: 1.0
- * Last Update	: 2013-03-18
+ * @version  	: 2.0
+ * Last Update	: 2013-03-19
  * Update By	: Ian R Middleton
  * 
  * 
@@ -42,13 +42,8 @@ public class Controller{
 	public static void main(String[] args) throws InterruptedException,
 											IOException, LineUnavailableException{
 		
-		Node.setup();
-		/*
-		SocketSender x   = new SocketSender("172.17.30.135");
-		SocketReceiver y = new SocketReceiver();
-		x.start();
-		y.start();
-		*/
+		Node node = new Node();
+		node.setup("/home/ian/Documents/configuration", 1);
 		
 	} // end main()
 	

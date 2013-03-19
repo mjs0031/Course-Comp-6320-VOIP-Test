@@ -47,7 +47,7 @@ public class ConfigReader{
 		
 		while((line = reader.readLine()) != null){
 			lines.add(line);
-		}
+		} // end while
 		
 		reader.close();
 		
