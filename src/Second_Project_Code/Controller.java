@@ -42,6 +42,7 @@ public class Controller{
 	public static void main(String[] args) throws InterruptedException,
 											IOException, LineUnavailableException{
 		
+		Node.setup();
 		/*
 		SocketSender x   = new SocketSender("172.17.30.135");
 		SocketReceiver y = new SocketReceiver();

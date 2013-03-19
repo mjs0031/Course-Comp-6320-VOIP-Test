@@ -17,7 +17,7 @@ import java.util.ArrayList;
  * 
  * @author(s)	: Ian Middleton, Zach Ogle, Matthew J Swann
  * @version  	: 1.0
- * Last Update	: 2013-03-18
+ * Last Update	: 2013-03-19
  * Update By	: Ian R Middleton
  * 
  * 
@@ -39,7 +39,7 @@ public class ConfigReader{
 	 * @return					: An array holding all the lines in the file.
 	 * @throws IOException 		: IOException is thrown if file does not exist.
 	 */
-	public ArrayList<String> getLines(String fileLoc) throws IOException{
+	public static ArrayList<String> getLines(String fileLoc) throws IOException{
 		File file = new File(fileLoc);
 		ArrayList<String> lines = new ArrayList<String>();
 		String line;

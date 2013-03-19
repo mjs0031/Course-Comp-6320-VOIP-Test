@@ -1,11 +1,12 @@
 // Package Declaration //
 package Second_Project_Code;
 
+import java.io.IOException;
 // Java Package Support //
 import java.util.ArrayList;
 
 // Internal Package Support //
-// { Not Applicable }
+// { Not Applicable } 
 
 /**
  * 
@@ -13,8 +14,8 @@ import java.util.ArrayList;
  * 
  * @author(s)	: Ian Middleton, Zach Ogle, Matthew J Swann
  * @version  	: 1.0
- * Last Update	: 2013-03-18
- * Update By	: Zach Ogle
+ * Last Update	: 2013-03-19
+ * Update By	: Ian Middleton
  * 
  * 
  * Second_Project_Code PACKAGE :: Source code for Comp 6360: Wireless & Mobile Networks
@@ -29,7 +30,7 @@ import java.util.ArrayList;
 public class Node{
 	int number, port, x, y;
 	String address;
-	ArrayList<Node> links;
+	ArrayList<Node> links = null;
 	
 	/**
      * Constructor for the Node class.
@@ -114,48 +115,10 @@ public class Node{
 		this.y = y;
 	} // end setY()
 	
-	/**
-	 * Gets an array containing all the nodes this node is linked to.
-	 * 
-	 * @return				: A node array containing all nodes this node
-	 * 							is linked to.
-	 */
-	public ArrayList<Node> getLinks(){
-		return links;
-	} // end getLinks()
-	
-	/**
-	 * Adds a new node to the list of nodes this node is linked to.
-	 * 
-	 * @param newNode		: The node to be added to the list of nodes which
-	 * 							this node is linked to.
-	 */
-	public void addLink(Node newNode){
-		links.add(newNode);
-	} // end addLink
-	
-	/**
-	 * Removes a node from the list of nodes this node is linked to.
-	 * 
-	 * @param nodeNumber	: The number associated with the node which will be
-	 * 							removed from the list of nodes linked with this one.
-	 */
-	public void removeLink(int nodeNumber){
-		boolean notFound = true;
-		for(int i = 0; i < links.size(); i++){
-			if(links.get(i).getNumber() == nodeNumber){
-				links.remove(i);
-			}
-		}
-	} // end removeLink()	
-	
-	/**
-	 * Removes all the nodes currently linked to this node from the links array and
-	 * resets the number of links back to 0.
-	 */
-	public void removeAllLinks(){
-		links.clear();
-	} // end removeAllLinks()
+	public static void setup() throws IOException{
+		ArrayList<String> lines = ConfigReader.getLines("/home/ian/Documents/configuration");
+		System.out.println(lines.get(0));
+	}
 	
 } // end Node class
 
