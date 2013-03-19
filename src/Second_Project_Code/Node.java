@@ -14,7 +14,7 @@ import java.util.ArrayList;
  * @author(s)	: Ian Middleton, Zach Ogle, Matthew J Swann
  * @version  	: 1.0
  * Last Update	: 2013-03-18
- * Update By	: Ian R Middleton
+ * Update By	: Zach Ogle
  * 
  * 
  * Second_Project_Code PACKAGE :: Source code for Comp 6360: Wireless & Mobile Networks
