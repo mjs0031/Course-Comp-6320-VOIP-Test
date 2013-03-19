@@ -2,7 +2,7 @@
 package Second_Project_Code;
 
 // Java Package Support //
-// { Not Applicable }
+import java.util.ArrayList;
 
 // Internal Package Support //
 // { Not Applicable }
@@ -28,9 +28,8 @@ package Second_Project_Code;
 
 public class Node{
 	int number, port, x, y;
-	string address;
-	Node[] links;
-	int numLinks;
+	String address;
+	ArrayList<Node> links;
 	
 	/**
      * Constructor for the Node class.
@@ -44,14 +43,12 @@ public class Node{
 	 * 							is linked to.
 	 * @param numLinks		: The number of links in the array.
      */
-	public Node(int number, string address, int port, int x, int y){
+	public Node(int number, String address, int port, int x, int y){
 		this.number = number;
 		this.address = address;
 		this.port = port;
 		this.x = x;
 		this.y = y;
-		this.links = links;
-		this.numLinks = numLinks;
 	} // end Node()
 	
 	/**
@@ -68,7 +65,7 @@ public class Node{
 	 * 
 	 * @return				: A string containing the IP address.
 	 */
-	public string getAddress(){
+	public String getAddress(){
 		return address;
 	} // end getAddress()
 	
@@ -123,7 +120,7 @@ public class Node{
 	 * @return				: A node array containing all nodes this node
 	 * 							is linked to.
 	 */
-	public Node[] getLinks(){
+	public ArrayList<Node> getLinks(){
 		return links;
 	} // end getLinks()
 	
@@ -134,8 +131,7 @@ public class Node{
 	 * 							this node is linked to.
 	 */
 	public void addLink(Node newNode){
-		links[numLinks] = newNode;
-		numLinks++;
+		links.add(newNode);
 	} // end addLink
 	
 	/**
@@ -145,18 +141,12 @@ public class Node{
 	 * 							removed from the list of nodes linked with this one.
 	 */
 	public void removeLink(int nodeNumber){
-		notFound = true;
-		currentSlot = 0;
-		for(int i = 0; i < numLinks; i++){
-			if(notFound){
-				if(links[currentSlot].getNumber == nodeNumber){
-					notFound = false;
-				}
-			}else{
-				links[currentSlot-1] = links[currentSlot];
+		boolean notFound = true;
+		for(int i = 0; i < links.size(); i++){
+			if(links.get(i).getNumber() == nodeNumber){
+				links.remove(i);
 			}
 		}
-		numLinks--;
 	} // end removeLink()	
 	
 	/**
@@ -164,8 +154,7 @@ public class Node{
 	 * resets the number of links back to 0.
 	 */
 	public void removeAllLinks(){
-		links = new Node[];
-		numLinks = 0;
+		links.clear();
 	} // end removeAllLinks()
 	
 } // end Node class

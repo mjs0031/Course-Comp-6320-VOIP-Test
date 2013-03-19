@@ -2,7 +2,11 @@
 package Second_Project_Code;
 
 // Java Package Support //
-// { Not Applicable }
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 
 // Internal Package Support //
 // { Not Applicable }
@@ -26,25 +30,26 @@ package Second_Project_Code;
  *  
  */
 
-public class FileReader{
+public class ConfigReader{
 	
 	/**
 	 * Reads the lines from a file and returns them in an array.
 	 * 
 	 * @param fileLoc			: A string of the location of the file to be read.
 	 * @return					: An array holding all the lines in the file.
+	 * @throws IOException 		: IOException is thrown if file does not exist.
 	 */
-	public string[] getLines(string fileLoc){
+	public ArrayList<String> getLines(String fileLoc) throws IOException{
 		File file = new File(fileLoc);
-		string[] lines = new string[];
-		string line;
-		int lineCount = 0;
+		ArrayList<String> lines = new ArrayList<String>();
+		String line;
 		BufferedReader reader = new BufferedReader(new FileReader(file));
 		
 		while((line = reader.readLine()) != null){
-			lines[lineCount] = line;
-			lineCount++;
+			lines.add(line);
 		}
+		
+		reader.close();
 		
 		return lines;
 	} // end getLines()

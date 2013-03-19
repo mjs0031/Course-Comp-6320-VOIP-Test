@@ -41,10 +41,13 @@ public class Controller{
 	 */
 	public static void main(String[] args) throws InterruptedException,
 											IOException, LineUnavailableException{
+		
+		/*
 		SocketSender x   = new SocketSender("172.17.30.135");
 		SocketReceiver y = new SocketReceiver();
 		x.start();
 		y.start();
+		*/
 		
 	} // end main()
 	
