@@ -7,7 +7,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -35,22 +34,20 @@ import javax.sound.sampled.TargetDataLine;
 * sound input, packs the sound in BYTE packets, and forwards the data
 * to the appropriate IP Address.
 * 
-* *** INCOMPLETE ***
 * 
 */
 
 
 public class SocketSender implements Runnable{
-
+	
+	//static variables
 	static InetAddress fwdAddress;
 	static DatagramPacket fwdDp;
-	static DatagramSocket s;
-	static Object lock;
+	static DatagramSocket fwdS;
 	
 	static{
-		lock = new Object();
 		try {
-			s = new DatagramSocket();
+			fwdS = new DatagramSocket();
 		} catch (SocketException e) {
 			// bad
 		}
@@ -60,14 +57,19 @@ public class SocketSender implements Runnable{
 	AudioFormat format;
 	
 	// Transmit Variables
-	InetAddress address;
+	InetAddress nextAddress;
+	DatagramSocket s;
 	DatagramPacket dp;
 	TargetDataLine tLine;
+	int nextPort;
 	
 	// Control Variables
 	boolean running = true;
-	byte[] buffer;
+	byte[] buffer, packet;
 	int numBytes;
+	
+	//Packet Header
+	int sequenceNum, srcAddress, destAddress;
 	
 	/**
 	 * Base constructor.
@@ -76,15 +78,22 @@ public class SocketSender implements Runnable{
 	 * @throws LineUnavailable		: General LineUnavailable for package 
 	 * 										functions.
 	 */
-	public SocketSender(String nextAddress, String destAddress) throws IOException, LineUnavailableException{
-		address = InetAddress.getByName(nextAddress);
+	public SocketSender(String nextAddress, int nextPort, int srcAddress, int destAddress) throws IOException, LineUnavailableException{
+		this.nextAddress = InetAddress.getByName(nextAddress);
+		s = new DatagramSocket();
 		format  = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 44100,
 												16, 2, 4, 44100, false);
 		DataLine.Info tLineInfo = new DataLine.Info(TargetDataLine.class, format);
+		this.nextPort = nextPort;
 		tLine   = (TargetDataLine)AudioSystem.getLine(tLineInfo);
 		tLine.open(this.format);
 		tLine.start();
-		buffer = new byte[128];
+		packet = new byte[128];
+		buffer = new byte[120];
+		
+		sequenceNum = 0;
+		this.srcAddress = srcAddress;
+		this.destAddress = destAddress;
 		
 	} // end SocketSender()
 	
@@ -107,9 +116,7 @@ public class SocketSender implements Runnable{
 	public static void forward(String address, int port, byte[] packet) throws IOException{
 		fwdAddress = InetAddress.getByName(address);
 		fwdDp = new DatagramPacket(packet, packet.length, fwdAddress, port);
-		synchronized(lock){
-			s.send(fwdDp);
-		} // end synchronized
+		fwdS.send(fwdDp);
 	} // end forward()
 	
 	/**
@@ -122,18 +129,40 @@ public class SocketSender implements Runnable{
 	@Override
 	public void run(){	
 
-		// Continues until program is closed.
 		while(running){
+			
+			// Add sequence number to the packet
+			if(sequenceNum < 65536){
+				packet[0] = (byte)((sequenceNum/256)-128);
+				packet[1] = (byte)((sequenceNum%256)-128);
+			} // end if
+			else{
+				sequenceNum = 0;
+				packet[0] = (byte)((sequenceNum/256)-128);
+				packet[1] = (byte)((sequenceNum%256)-128);
+			} // end else
+			
+			// Add source address to the packet
+			packet[2] = (byte)((srcAddress/256)-128);
+			packet[3] = (byte)((srcAddress%256)-128);
+			
+			// Add destination address to the packet
+			packet[4] = (byte)((destAddress/256)-128);
+			packet[5] = (byte)((destAddress%256)-128);
+			
+			// Add previous hop to the packet
+			packet[6] = (byte)((srcAddress/256)-128);
+			packet[7] = (byte)((srcAddress%256)-128);
+			
 			numBytes = tLine.read(buffer, 0, buffer.length);
-			dp = new DatagramPacket(buffer, buffer.length, address, 10150);
-			synchronized(lock){
-				try{
-					s.send(dp);
-				}
-				catch (IOException e){
-					// empty sub-block
-				}
-			} // end synchronized
+			System.arraycopy(buffer, 0, packet, 8, buffer.length);
+			dp = new DatagramPacket(packet, packet.length, nextAddress, nextPort);
+			try{
+				s.send(dp);
+			}
+			catch (IOException e){
+				// empty sub-block
+			}
 		}// end while
 		
 	} // end SocketSender.run()

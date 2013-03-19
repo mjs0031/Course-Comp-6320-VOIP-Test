@@ -5,6 +5,8 @@ package Second_Project_Code;
 import java.util.ArrayList;
 import java.io.IOException;
 
+import javax.sound.sampled.LineUnavailableException;
+
 // Internal Package Support //
 // { Not Applicable } 
 
@@ -33,6 +35,10 @@ public class Node{
 	int number, port, x, y;
 	String address;
 	ArrayList<Node> links = new ArrayList<Node>();
+	ArrayList<SocketSender> sendRunnables = new ArrayList<SocketSender>();
+	ArrayList<Thread> sendThreads = new ArrayList<Thread>();
+	SocketReceiver receiver;
+	Thread receiverThread;
 	
 	/**
 	 * Constructor for the Node class.
@@ -154,7 +160,7 @@ public class Node{
 				this.y = Integer.parseInt(parts[5]);
 				for(int j = 7; j < parts.length; j++){
 					toBeLinked.add(Integer.parseInt(parts[j]));
-				}
+				} // end for
 			} // end if
 			else{
 				number = Integer.parseInt(parts[1]);
@@ -178,13 +184,58 @@ public class Node{
 		} // end if
 	} // end setup()
 	
-	public void startSending(){
-		
+	/**
+	 * Creates a number of senders equal to the number of links this node has. As each
+	 * sender is created it starts sending immediately.
+	 * 
+	 * @param destNumber				: The destination node for the information being sent.
+	 * @throws IOException				: General IOException.
+	 * @throws LineUnavailableException	: General LineUnavailableException
+	 */
+	public void startSending(int destNumber) throws IOException, LineUnavailableException{
+		SocketSender newSender;
+		Thread newThread;
+		for(int i = 0; i < links.size(); i++){
+			newSender = new SocketSender(links.get(i).getAddress(), links.get(i).getPort(), number, destNumber);
+			sendRunnables.add(newSender);
+			newThread = new Thread(newSender);
+			newThread.start();
+			sendThreads.add(newThread);
+		} // end for
 	} // end startSending()
 	
-	public void startReceiving(){
-		
+	/**
+	 * Stops the threads running the SocketSender objects.
+	 * 
+	 * @throws InterruptedException		: General InterruptedException.
+	 */
+	public void stopSending() throws InterruptedException{
+		for(int i = 0; i < sendRunnables.size(); i++){
+			sendRunnables.get(i).terminate();
+			sendThreads.get(i).join();
+		} // end for
+	} // end stopSending()
+	
+	/**
+	 * Starts the receiver for this node.
+	 * 
+	 * @throws IOException				: General IOException
+	 * @throws LineUnavailableException	: General LineUnavailableException
+	 */
+	public void startReceiving() throws IOException, LineUnavailableException{
+		receiver = new SocketReceiver(port, number, links);
+		receiverThread = new Thread(receiver);
 	} // end startReceiving()
+	
+	/**
+	 * Stops the receiver for this node.
+	 * 
+	 * @throws InterruptedException		: General InterruptedException
+	 */
+	public void stopReceiving() throws InterruptedException{
+		receiver.terminate();
+		receiverThread.join();
+	} // end stopReceiving
 	
 } // end Node class
 
