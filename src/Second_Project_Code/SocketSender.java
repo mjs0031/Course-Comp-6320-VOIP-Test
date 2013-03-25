@@ -7,6 +7,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import javax.sound.sampled.AudioFormat;
@@ -24,7 +25,7 @@ import javax.sound.sampled.TargetDataLine;
 * 
 * @author(s)	: Ian Middleton, Zach Ogle, Matthew J Swann
 * @version  	: 2.0
-* Last Update	: 2013-03-19
+* Last Update	: 2013-03-25
 * Update By		: Ian R Middleton
 * 
 * 
@@ -32,8 +33,9 @@ import javax.sound.sampled.TargetDataLine;
 * 	               Assignment 2 :: VOIP
 * 
 * This is source code for the SocketSender class. This class records
-* sound input, packs the sound in BYTE packets, and forwards the data
-* to the appropriate IP Address.
+* 	sound input, packs the sound in BYTE packets, and forwards the data
+* 	to the appropriate IP Address(es) based on the Nodes linked to the 
+* 	Node calling this thread.
 * 
 * 
 */
@@ -58,8 +60,7 @@ public class SocketSender implements Runnable{
 	AudioFormat format;
 	
 	// Transmit Variables
-	ArrayList<InetAddress> nextAddresses;
-	ArrayList<Integer> nextPorts;
+	ArrayList<Node> linkedNodes;
 	DatagramSocket s;
 	DatagramPacket dp;
 	TargetDataLine tLine;
@@ -75,15 +76,15 @@ public class SocketSender implements Runnable{
 	/**
 	 * Base constructor.
 	 * 
+	 * @param nodes					: ArrayList of Node objects that are linked to the sending Node.
+	 * @param srcAddress			: Number designating the source Node of this message.
+	 * @param destAddress			: Number designating the destination Node of this message.
 	 * @throws IOException			: General IOException for package functions.
 	 * @throws LineUnavailable		: General LineUnavailable for package 
 	 * 										functions.
 	 */
 	public SocketSender(ArrayList<Node> nodes, int srcAddress, int destAddress) throws IOException, LineUnavailableException{
-		for(int i = 0; i < nodes.size(); i++){
-			nextAddresses.add(InetAddress.getByName(nodes.get(i).getAddress()));
-			nextPorts.add(nodes.get(i).getPort());
-		}
+		linkedNodes = nodes;
 		
 		s = new DatagramSocket();
 		format  = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 44100,
@@ -125,14 +126,13 @@ public class SocketSender implements Runnable{
 	
 	/**
 	 * Run command called automatically when the thread is started.
-	 * 
-	 * @throws IOException			: General IOException for package functions.
-	 * @throws LineUnavailable		: General LineUnavailable for package 
-	 * 										functions.
 	 */
 	@Override
 	public void run(){	
 
+		InetAddress nextAddress = null;
+		int nextPort;
+		
 		while(running){
 			
 			// Add sequence number to the packet
@@ -160,18 +160,22 @@ public class SocketSender implements Runnable{
 			
 			numBytes = tLine.read(buffer, 0, buffer.length);
 			System.arraycopy(buffer, 0, packet, 8, buffer.length);
-			for(int i = 0; i < nextAddresses.size(); i++){
-				dp = new DatagramPacket(packet, packet.length, nextAddresses.get(i), nextPorts.get(i));
+			for(int i = 0; i < linkedNodes.size(); i++){
+				try {
+					nextAddress = InetAddress.getByName(linkedNodes.get(i).getAddress());
+				}// end try
+				catch (UnknownHostException e1) {
+					e1.printStackTrace();
+				}// end catch
+				nextPort = linkedNodes.get(i).getPort();
+				dp = new DatagramPacket(packet, packet.length, nextAddress, nextPort);
 				try{
 					s.send(dp);
-				}
+				}// end try
 				catch (IOException e){
 					// empty sub-block
-				}
+				}// end catch
 			}// end for
 		}// end while
-		
-	} // end SocketSender.run()
-		
-		
+	} // end run()		
 } // end SocketSender class
