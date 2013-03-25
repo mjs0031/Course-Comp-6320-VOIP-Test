@@ -7,6 +7,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.util.ArrayList;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -57,11 +58,11 @@ public class SocketSender implements Runnable{
 	AudioFormat format;
 	
 	// Transmit Variables
-	InetAddress nextAddress;
+	ArrayList<InetAddress> nextAddresses;
+	ArrayList<Integer> nextPorts;
 	DatagramSocket s;
 	DatagramPacket dp;
 	TargetDataLine tLine;
-	int nextPort;
 	
 	// Control Variables
 	boolean running = true;
@@ -78,13 +79,16 @@ public class SocketSender implements Runnable{
 	 * @throws LineUnavailable		: General LineUnavailable for package 
 	 * 										functions.
 	 */
-	public SocketSender(String nextAddress, int nextPort, int srcAddress, int destAddress) throws IOException, LineUnavailableException{
-		this.nextAddress = InetAddress.getByName(nextAddress);
+	public SocketSender(ArrayList<Node> nodes, int srcAddress, int destAddress) throws IOException, LineUnavailableException{
+		for(int i = 0; i < nodes.size(); i++){
+			nextAddresses.add(InetAddress.getByName(nodes.get(i).getAddress()));
+			nextPorts.add(nodes.get(i).getPort());
+		}
+		
 		s = new DatagramSocket();
 		format  = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 44100,
 												16, 2, 4, 44100, false);
 		DataLine.Info tLineInfo = new DataLine.Info(TargetDataLine.class, format);
-		this.nextPort = nextPort;
 		tLine   = (TargetDataLine)AudioSystem.getLine(tLineInfo);
 		tLine.open(this.format);
 		tLine.start();
@@ -156,13 +160,15 @@ public class SocketSender implements Runnable{
 			
 			numBytes = tLine.read(buffer, 0, buffer.length);
 			System.arraycopy(buffer, 0, packet, 8, buffer.length);
-			dp = new DatagramPacket(packet, packet.length, nextAddress, nextPort);
-			try{
-				s.send(dp);
-			}
-			catch (IOException e){
-				// empty sub-block
-			}
+			for(int i = 0; i < nextAddresses.size(); i++){
+				dp = new DatagramPacket(packet, packet.length, nextAddresses.get(i), nextPorts.get(i));
+				try{
+					s.send(dp);
+				}
+				catch (IOException e){
+					// empty sub-block
+				}
+			}// end for
 		}// end while
 		
 	} // end SocketSender.run()

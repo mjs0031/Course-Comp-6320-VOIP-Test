@@ -37,8 +37,9 @@ public class Node{
 	ArrayList<Node> links = new ArrayList<Node>();
 	ArrayList<SocketSender> sendRunnables = new ArrayList<SocketSender>();
 	ArrayList<Thread> sendThreads = new ArrayList<Thread>();
+	SocketSender sender;
 	SocketReceiver receiver;
-	Thread receiverThread;
+	Thread receiverThread, senderThread;
 	
 	/**
 	 * Constructor for the Node class.
@@ -193,15 +194,9 @@ public class Node{
 	 * @throws LineUnavailableException	: General LineUnavailableException
 	 */
 	public void startSending(int destNumber) throws IOException, LineUnavailableException{
-		SocketSender newSender;
-		Thread newThread;
-		for(int i = 0; i < links.size(); i++){
-			newSender = new SocketSender(links.get(i).getAddress(), links.get(i).getPort(), number, destNumber);
-			sendRunnables.add(newSender);
-			newThread = new Thread(newSender);
-			newThread.start();
-			sendThreads.add(newThread);
-		} // end for
+		sender = new SocketSender(links, number, destNumber);
+		senderThread = new Thread(sender);
+		senderThread.start();
 	} // end startSending()
 	
 	/**
@@ -210,10 +205,8 @@ public class Node{
 	 * @throws InterruptedException		: General InterruptedException.
 	 */
 	public void stopSending() throws InterruptedException{
-		for(int i = 0; i < sendRunnables.size(); i++){
-			sendRunnables.get(i).terminate();
-			sendThreads.get(i).join();
-		} // end for
+		sender.terminate();
+		senderThread.join();
 	} // end stopSending()
 	
 	/**
@@ -225,6 +218,7 @@ public class Node{
 	public void startReceiving() throws IOException, LineUnavailableException{
 		receiver = new SocketReceiver(port, number, links);
 		receiverThread = new Thread(receiver);
+		receiverThread.start();
 	} // end startReceiving()
 	
 	/**
