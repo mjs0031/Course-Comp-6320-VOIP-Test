@@ -216,7 +216,7 @@ public class Node{
 	 * @throws LineUnavailableException	: General LineUnavailableException
 	 */
 	public void startReceiving() throws IOException, LineUnavailableException{
-		receiver = new SocketReceiver(port, number, links);
+		receiver = new SocketReceiver(address, port, number, links);
 		receiverThread = new Thread(receiver);
 		receiverThread.start();
 	} // end startReceiving()

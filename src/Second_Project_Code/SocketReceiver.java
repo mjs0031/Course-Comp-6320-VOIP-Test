@@ -42,7 +42,6 @@ public class SocketReceiver implements Runnable{
 	AudioFormat format;
 	
 	// Transmit Variables
-	InetAddress address;
 	DatagramPacket dp;
 	DatagramSocket s;
 	SourceDataLine sLine;
@@ -51,6 +50,8 @@ public class SocketReceiver implements Runnable{
 	boolean running = true;
 	byte[] buf;
 	int number;
+	String address;
+	int port;
 	ArrayList<Node> nodes;
 	ArrayList<int[]> cache;
 	
@@ -61,7 +62,7 @@ public class SocketReceiver implements Runnable{
 	 * @throws LineUnavailable		: General LineUnavailable for package 
 	 * 										functions.
 	 */
-	public SocketReceiver(int port, int number, ArrayList<Node> nodes) throws IOException, LineUnavailableException{
+	public SocketReceiver(String address, int port, int number, ArrayList<Node> nodes) throws IOException, LineUnavailableException{
 		this.buf    = new byte[128];
 		this.s      = new DatagramSocket(port);
 		this.dp     = new DatagramPacket(buf, buf.length);
@@ -71,6 +72,8 @@ public class SocketReceiver implements Runnable{
 		this.sLine = (SourceDataLine)AudioSystem.getLine(sLineInfo);
 		this.nodes = nodes;
 		this.number = number;
+		this.address = address;
+		this.port = port;
 		
 	} // end SocketReceiver()
 	
@@ -79,7 +82,15 @@ public class SocketReceiver implements Runnable{
 	 * called afterward in order to wait for the thread to finish.
 	 */
 	public void terminate(){
-		running = false;
+		byte[] buffer = new byte[8];
+		for(int i = 0; i < 8; i++){
+			buffer[i] = -128;
+		}
+		try {
+			SocketSender.forward(address, port, buffer);
+		} catch (IOException e) {
+			// Live on the edge.
+		}
 	} // end terminate()
 	
 	/**
@@ -99,7 +110,7 @@ public class SocketReceiver implements Runnable{
 		}
 		this.sLine.start();
 		
-		// Continues until program is closed.		
+		// Continues until program is closed.
 		while(running){
 			try{
 				this.s.receive(this.dp);
@@ -111,7 +122,10 @@ public class SocketReceiver implements Runnable{
 			int source = ((dp.getData()[2] + 128) * 256) + dp.getData()[3] + 128;
 			int destination = ((dp.getData()[4] + 128) * 256) + dp.getData()[5] + 128;
 			int prevHop = ((dp.getData()[6] + 128) * 256) + dp.getData()[7] + 128;
-			if (destination == number){
+			if (source == 0){
+				running = false;
+			}
+			else if (destination == number){
 				this.sLine.write(this.dp.getData(), 0, this.dp.getLength());
 			}
 			else if (source != number){
@@ -144,7 +158,7 @@ public class SocketReceiver implements Runnable{
 				}
 			}
 		} // end while
-		
+		System.out.println("I'm Done");
 	} // end SocketReceiver.run()
 
 	

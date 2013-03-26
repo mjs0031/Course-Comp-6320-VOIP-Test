@@ -35,17 +35,15 @@ public class VOIP_Gui extends JFrame{
 
 	// GUI Variables
 	private JButton button_one, button_two;
-	private JLabel label_one, label_two, label_three, label_four,
-					label_five;
+	private JLabel label_one, label_two, label_three, label_four, label_five;
 	private JPanel panel_one, primary;
-	private JTextField text_field_one;
+	private JTextField text_field_home_node, text_field_dest_node, text_field_config_file;
 	
 	private TransmitListener TransmitListener;
-	private KillSwitch KillSwitch;
+	private StartListener Starter;
 	
-	// VOIP Variables
-	private SocketSender sender;
-	private SocketReceiver receiver;
+	// Node variables
+	private Node node;
 	
 	
 	/**
@@ -59,29 +57,33 @@ public class VOIP_Gui extends JFrame{
 	public VOIP_Gui() throws IOException, LineUnavailableException{
 		
 		// JButtons
-		this.button_one = new JButton(" :: Connect");
-		this.button_one.setFont(new Font("Helvetica", Font.BOLD, 12));
-		this.button_one.setPreferredSize(new Dimension(150,50));
-		TransmitListener = new TransmitListener();
-		this.button_one.addActionListener(TransmitListener);
+		this.button_one = new JButton("Start");
+		Starter 		= new StartListener();
+		this.button_one.addActionListener(Starter);
 		
-		this.button_two = new JButton("{ Disconnect }");
-		KillSwitch      = new KillSwitch();
-		this.button_two.addActionListener(KillSwitch);
-						
+		this.button_two = new JButton("Begin Sending");
+		this.button_two.setFont(new Font("Helvetica", Font.BOLD, 12));
+		this.button_two.setPreferredSize(new Dimension(100,50));
+		TransmitListener = new TransmitListener();
+		this.button_two.addActionListener(TransmitListener);
+		
 		// JLabels
-		this.label_one   = new JLabel("Enter IP Connection ::");
-		this.label_two   = new JLabel("");
-		this.label_three = new JLabel("");
-		this.label_four  = new JLabel("");
-		this.label_five  = new JLabel("");
+		this.label_one   = new JLabel("Node ::");
+		this.label_two   = new JLabel("Config File ::");
+		this.label_three = new JLabel("Not Running");
+		this.label_three.setForeground(Color.red);
+		this.label_four = new JLabel("Dest Node ::");
+		this.label_five = new JLabel("Not Sending");
+		this.label_five.setForeground(Color.red);
 		
 		// JPanels
 		this.panel_one = new JPanel();
 		this.primary   = new JPanel();
 				
 		// JTextField
-		this.text_field_one = new JTextField(15);
+		this.text_field_home_node = new JTextField(15);
+		this.text_field_dest_node = new JTextField(15);
+		this.text_field_config_file = new JTextField(15);
 		
 		// Control Block
 		this.compile_components();
@@ -97,61 +99,78 @@ public class VOIP_Gui extends JFrame{
 		this.getContentPane().add(primary);
 		
 		// Panel One additions
-		this.panel_one.setLayout(new GridLayout(4, 4));
-		this.panel_one.add(this.label_one);	
+		this.panel_one.setLayout(new GridLayout(5, 2));
+		this.panel_one.add(this.label_one);
+		this.panel_one.add(this.text_field_home_node);
 		this.panel_one.add(this.label_two);
-		this.panel_one.add(this.text_field_one);
-		this.panel_one.add(this.button_one);
+		this.panel_one.add(this.text_field_config_file);
 		this.panel_one.add(this.label_three);
+		this.panel_one.add(this.button_one);
 		this.panel_one.add(this.label_four);
+		this.panel_one.add(this.text_field_dest_node);
 		this.panel_one.add(this.label_five);
 		this.panel_one.add(this.button_two);
 
 		
 		// Primary Panel additions
-		this.primary.setPreferredSize(new Dimension(4*100,3*100));
+		this.primary.setPreferredSize(new Dimension(4*100,3*100+10));
 		this.primary.add(this.panel_one);
 	} // end VOIP_Gui.compile_components()
 
+	/**
+	 * Action listener for the start button.
+	 * Attached to the start button.
+	 */
+	public class StartListener implements ActionListener{
+		public void actionPerformed(ActionEvent event){
+			if(button_one.getText() == "Start"){
+				node = new Node();
+				try {
+					node.setup(text_field_config_file.getText(), Integer.parseInt(text_field_home_node.getText()));
+					node.startReceiving();
+					label_three.setText("Running");
+					label_three.setForeground(Color.green);
+					button_one.setText("Stop");	
+				} catch (IOException e) {
+					label_three.setText("File DNE");
+				} catch (NumberFormatException e){
+					label_three.setText("Need Node Number");
+				} catch (LineUnavailableException e) {
+					// Live on the edge.
+				}
+			}
+			else{
+				try {
+					node.stopReceiving();
+				} catch (InterruptedException e) {
+					// Live on the edge.
+				}
+				label_three.setText("Not Running");
+				label_three.setForeground(Color.red);
+				button_one.setText("Start");
+			}
+		}// end StartListener.actionPerformed()
+	}// end StartListener
 	
 	/**
-	 * Action listener for the transmission and connect buttons.
-	 * Attached to the connect button.
+	 * Action listener for the sending button.
+	 * Attached to the send button.
 	 */
 	private class TransmitListener implements ActionListener{
 		
 		public void actionPerformed(ActionEvent event){
-			String ip_address = text_field_one.getText();
-			
-			try{
-				sender = new SocketSender(ip_address);
-				receiver = new SocketReceiver();
+			if(button_two.getText() == "Begin Sending"){
+				label_five.setText("Sending");
+				label_five.setForeground(Color.green);
+				button_two.setText("Stop Sending");
 			}
-			catch (Exception e){
-				// skip it
-			}	
-			sender.start();
-			receiver.start();
-			
-			text_field_one.setText("");
-			
+			else{
+				label_five.setText("Not Sending");
+				label_five.setForeground(Color.red);
+				button_two.setText("Begin Sending");
+			}
 		} // end TransmitListener.actionPerformed()
-	}// end TransmitListener()
-	
-	
-	/**
-	 * Action listener for the kill command. Attached to the
-	 * Disconnect button.
-	 */
-	private class KillSwitch implements ActionListener{
-		
-		public void actionPerformed(ActionEvent event){
-			
-			// Kill command
-			System.exit(0);
-		}// end KillSwitch.actionPerformed()	
-	} // end KillSwitch()
-		
+	}// end TransmitListener()		
 	
 		/**
 		 * Runs the Gui. Constructs the complementary variables, etc.
