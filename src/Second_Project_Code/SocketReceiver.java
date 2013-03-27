@@ -68,11 +68,11 @@ public class SocketReceiver implements Runnable{
 		this.format = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 44100,
 												16, 2, 4, 44100, false);		
 		DataLine.Info sLineInfo = new DataLine.Info(SourceDataLine.class, this.format);
-		this.sLine = (SourceDataLine)AudioSystem.getLine(sLineInfo);
-		this.nodes = nodes;
-		this.number = number;
+		this.sLine   = (SourceDataLine)AudioSystem.getLine(sLineInfo);
+		this.nodes   = nodes;
+		this.number  = number;
 		this.address = address;
-		this.port = port;
+		this.port    = port;
 		
 	} // end SocketReceiver()
 	
@@ -81,15 +81,21 @@ public class SocketReceiver implements Runnable{
 	 * called afterward in order to wait for the thread to finish.
 	 */
 	public void terminate(){
+		
 		byte[] buffer = new byte[8];
+		
 		for(int i = 0; i < 8; i++){
 			buffer[i] = -128;
 		}
+		
 		try {
 			SocketSender.forward(address, port, buffer);
-		} catch (IOException e) {
+		}
+		
+		catch (IOException e) {
 			// Live on the edge.
 		}
+		
 	} // end terminate()
 	
 	/**
@@ -101,38 +107,53 @@ public class SocketReceiver implements Runnable{
 	 */
 	@Override
 	public void run(){
-		try{
+		try {
 			this.sLine.open(this.format);
 		}
+		
 		catch (LineUnavailableException e){
 			// empty sub-block	
 		}
+		
 		this.sLine.start();
 		
 		// Continues until program is closed.
 		while(running){
+			
 			try{
 				this.s.receive(this.dp);
 			}
+			
 			catch (IOException e){
 				// empty sub-block		
 			}
+			
 			System.out.println("Hit");
-			int sequence = ((dp.getData()[0] + 128) * 256) + dp.getData()[1] + 128;
-			int source = ((dp.getData()[2] + 128) * 256) + dp.getData()[3] + 128;
+			
+			int sequence    = ((dp.getData()[0] + 128) * 256) + dp.getData()[1] + 128;
+			int source      = ((dp.getData()[2] + 128) * 256) + dp.getData()[3] + 128;
 			int destination = ((dp.getData()[4] + 128) * 256) + dp.getData()[5] + 128;
-			int prevHop = ((dp.getData()[6] + 128) * 256) + dp.getData()[7] + 128;
+			int prevHop     = ((dp.getData()[6] + 128) * 256) + dp.getData()[7] + 128;
+			
 			if (source == 0){
+			
 				running = false;
 			}
+			
 			else if (destination == number){
+				
 				System.out.println("Honey I'm Home");
 				this.sLine.write(this.dp.getData(), 0, this.dp.getLength());
 			}
+			
 			else if (source != number){
+			
 				int count;
+				
 				for (count = 0; count < cache.size(); count++){
+				
 					if (cache.get(count)[0] == source){
+					
 						if (cache.get(count)[1] < sequence){
 							cache.get(count)[1] = sequence;
 						}
@@ -140,18 +161,24 @@ public class SocketReceiver implements Runnable{
 					}
 				}
 				if (count == cache.size()){
+					
 					cache.add(new int[2]);
 					cache.get(count)[0] = source;
 					cache.get(count)[1] = sequence;
 				}
+				
+				
 				byte[] buffer = dp.getData();
 				buffer[6] = (byte)((number / 256) - 128);
 				buffer[7] = (byte)((number % 256) - 128);
+				
 				for (count = 0; count < nodes.size(); count++){
+					
 					if (nodes.get(count).getNumber() != prevHop){
-						try{
+						try {
 							SocketSender.forward(nodes.get(count).getAddress(), nodes.get(count).getPort(), buffer);
 						}
+						
 						catch (IOException e){
 							//empty sub-block
 						}
@@ -159,6 +186,7 @@ public class SocketReceiver implements Runnable{
 				}
 			}
 		} // end while
+		
 		s.close();
 	} // end SocketReceiver.run()
 

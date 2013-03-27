@@ -63,9 +63,9 @@ public class SocketSender implements Runnable{
 	
 	// Transmit Variables
 	ArrayList<Node> linkedNodes;
-	DatagramSocket s;
-	DatagramPacket dp;
-	TargetDataLine tLine;
+	DatagramSocket  s;
+	DatagramPacket  dp;
+	TargetDataLine  tLine;
 	
 	// Control Variables
 	boolean running = true;
@@ -150,8 +150,8 @@ public class SocketSender implements Runnable{
 			else{
 				
 				sequenceNum = 0;
-				packet[0] = (byte)((sequenceNum/256)-128);
-				packet[1] = (byte)((sequenceNum%256)-128);
+				packet[0]   = (byte)((sequenceNum/256)-128);
+				packet[1]   = (byte)((sequenceNum%256)-128);
 			} // end else
 			
 			// Add source address to the packet

@@ -44,7 +44,7 @@ public class ConfigReader{
 		
 		ArrayList<String> lines = new ArrayList<String>();
 		
-		Scanner reader = new Scanner(new File(fileLoc));
+		Scanner reader          = new Scanner(new File(fileLoc));
 		
 		while(reader.hasNext()){
 		
