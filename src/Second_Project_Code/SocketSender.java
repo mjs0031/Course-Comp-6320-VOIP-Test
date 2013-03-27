@@ -25,7 +25,7 @@ import javax.sound.sampled.TargetDataLine;
 * 
 * @author(s)	: Ian Middleton, Zach Ogle, Matthew J Swann
 * @version  	: 2.0
-* Last Update	: 2013-03-25
+* Last Update	: 2013-03-26
 * Update By		: Ian R Middleton
 * 
 * 
@@ -36,7 +36,6 @@ import javax.sound.sampled.TargetDataLine;
 * 	sound input, packs the sound in BYTE packets, and forwards the data
 * 	to the appropriate IP Address(es) based on the Nodes linked to the 
 * 	Node calling this thread.
-* 
 * 
 */
 
@@ -49,9 +48,12 @@ public class SocketSender implements Runnable{
 	static DatagramSocket fwdS;
 	
 	static{
+		
 		try {
 			fwdS = new DatagramSocket();
-		} catch (SocketException e) {
+		} 
+		
+		catch (SocketException e) {
 			// bad
 		}
 	}
@@ -86,21 +88,22 @@ public class SocketSender implements Runnable{
 	public SocketSender(ArrayList<Node> nodes, int srcAddress, int destAddress) throws IOException, LineUnavailableException{
 		linkedNodes = nodes;
 		
-		s = new DatagramSocket();
+		s       = new DatagramSocket();
 		format  = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 44100,
 												16, 2, 4, 44100, false);
 		DataLine.Info tLineInfo = new DataLine.Info(TargetDataLine.class, format);
 		tLine   = (TargetDataLine)AudioSystem.getLine(tLineInfo);
 		tLine.open(this.format);
 		tLine.start();
-		packet = new byte[128];
-		buffer = new byte[120];
+		packet  = new byte[128];
+		buffer  = new byte[120];
 		
-		sequenceNum = 0;
-		this.srcAddress = srcAddress;
+		sequenceNum      = 0;
+		this.srcAddress  = srcAddress;
 		this.destAddress = destAddress;
 		
 	} // end SocketSender()
+	
 	
 	/**
 	 * Terminate can be called to terminate execution of the thread. A join should be
@@ -109,6 +112,7 @@ public class SocketSender implements Runnable{
 	public void terminate(){
 		running = false;
 	} // end terminate()
+	
 	
 	/**
 	 * Static method to be used for forwarding packets.
@@ -120,9 +124,10 @@ public class SocketSender implements Runnable{
 	 */
 	public static void forward(String address, int port, byte[] packet) throws IOException{
 		fwdAddress = InetAddress.getByName(address);
-		fwdDp = new DatagramPacket(packet, packet.length, fwdAddress, port);
+		fwdDp      = new DatagramPacket(packet, packet.length, fwdAddress, port);
 		fwdS.send(fwdDp);
 	} // end forward()
+	
 	
 	/**
 	 * Run command called automatically when the thread is started.
@@ -137,10 +142,13 @@ public class SocketSender implements Runnable{
 			
 			// Add sequence number to the packet
 			if(sequenceNum < 65536){
+				
 				packet[0] = (byte)((sequenceNum/256)-128);
 				packet[1] = (byte)((sequenceNum%256)-128);
 			} // end if
+			
 			else{
+				
 				sequenceNum = 0;
 				packet[0] = (byte)((sequenceNum/256)-128);
 				packet[1] = (byte)((sequenceNum%256)-128);
@@ -160,21 +168,27 @@ public class SocketSender implements Runnable{
 			
 			numBytes = tLine.read(buffer, 0, buffer.length);
 			System.arraycopy(buffer, 0, packet, 8, buffer.length);
+			
 			for(int i = 0; i < linkedNodes.size(); i++){
+				
 				try {
 					nextAddress = InetAddress.getByName(linkedNodes.get(i).getAddress());
 				}// end try
+				
 				catch (UnknownHostException e1) {
 					// live on the edge
 				}// end catch
+				
 				nextPort = linkedNodes.get(i).getPort();
-				dp = new DatagramPacket(packet, packet.length, nextAddress, nextPort);
+				dp       = new DatagramPacket(packet, packet.length, nextAddress, nextPort);
 				try{
 					s.send(dp);
 				}// end try
+				
 				catch (IOException e){
 					// empty sub-block
 				}// end catch
+				
 			}// end for
 		}// end while
 	} // end run()		

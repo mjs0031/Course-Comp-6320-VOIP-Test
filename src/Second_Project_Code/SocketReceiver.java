@@ -5,7 +5,7 @@ package Second_Project_Code;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
+//import java.net.InetAddress;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
@@ -23,7 +23,7 @@ import java.util.ArrayList;
 * 
 * @author(s)	: Ian Middleton, Zach Ogle, Matthew J Swann
 * @version  	: 1.0
-* Last Update	: 2013-03-18
+* Last Update	: 2013-03-26
 * Update By		: Ian Middleton
 * 
 * 
@@ -49,9 +49,8 @@ public class SocketReceiver implements Runnable{
 	// Control Variables
 	boolean running = true;
 	byte[] buf;
-	int number;
+	int number, port;
 	String address;
-	int port;
 	ArrayList<Node> nodes;
 	ArrayList<int[]> cache = new ArrayList<int[]>();
 	

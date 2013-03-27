@@ -15,7 +15,7 @@ import javax.sound.sampled.LineUnavailableException;
  * 
  * @author(s)	: Ian Middleton, Zach Ogle, Matthew J Swann
  * @version  	: 2.0
- * Last Update	: 2013-03-19
+ * Last Update	: 2013-03-26
  * Update By	: Ian R Middleton
  * 
  * 

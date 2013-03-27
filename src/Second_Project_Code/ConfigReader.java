@@ -19,7 +19,7 @@ import java.util.Scanner;
  * 
  * @author(s)	: Ian Middleton, Zach Ogle, Matthew J Swann
  * @version  	: 1.0
- * Last Update	: 2013-03-19
+ * Last Update	: 2013-03-26
  * Update By	: Ian R Middleton
  * 
  * 
@@ -41,10 +41,13 @@ public class ConfigReader{
 	 * @throws IOException 		: IOException is thrown if file does not exist.
 	 */
 	public static ArrayList<String> getLines(String fileLoc) throws IOException{
+		
 		ArrayList<String> lines = new ArrayList<String>();
+		
 		Scanner reader = new Scanner(new File(fileLoc));
 		
 		while(reader.hasNext()){
+		
 			lines.add(reader.nextLine());
 		} // end while
 		

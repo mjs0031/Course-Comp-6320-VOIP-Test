@@ -17,7 +17,7 @@ import javax.sound.sampled.LineUnavailableException;
  * 
  * @author(s)	: Ian Middleton, Zach Ogle, Matthew J Swann
  * @version  	: 1.0
- * Last Update	: 2013-03-18
+ * Last Update	: 2013-03-26
  * Update By	: Ian R Middleton
  * 
  * Second_Project_Code PACKAGE :: Source code for Comp 6360: Wireless & Mobile Networks
@@ -26,6 +26,7 @@ import javax.sound.sampled.LineUnavailableException;
  * Source code for Comp 6360: Wireless & Mobile Networks. This code
  * encompasses the graphical user interface and runs the transmission
  * sender and receiver.
+ * 
  */
 
 public class VOIP_Gui extends JFrame{
@@ -71,9 +72,9 @@ public class VOIP_Gui extends JFrame{
 		this.label_one   = new JLabel("Node ::");
 		this.label_two   = new JLabel("Config File ::");
 		this.label_three = new JLabel("Not Running");
+		this.label_four  = new JLabel("Dest Node ::");
+		this.label_five  = new JLabel("Not Sending");
 		this.label_three.setForeground(Color.red);
-		this.label_four = new JLabel("Dest Node ::");
-		this.label_five = new JLabel("Not Sending");
 		this.label_five.setForeground(Color.red);
 		
 		// JPanels
@@ -81,8 +82,8 @@ public class VOIP_Gui extends JFrame{
 		this.primary   = new JPanel();
 				
 		// JTextField
-		this.text_field_home_node = new JTextField(15);
-		this.text_field_dest_node = new JTextField(15);
+		this.text_field_home_node   = new JTextField(15);
+		this.text_field_dest_node   = new JTextField(15);
 		this.text_field_config_file = new JTextField(15);
 		
 		// Control Block
@@ -111,12 +112,12 @@ public class VOIP_Gui extends JFrame{
 		this.panel_one.add(this.label_five);
 		this.panel_one.add(this.button_two);
 
-		
 		// Primary Panel additions
 		this.primary.setPreferredSize(new Dimension(4*100,3*100+10));
 		this.primary.add(this.panel_one);
 	} // end VOIP_Gui.compile_components()
 
+	
 	/**
 	 * Action listener for the start button.
 	 * Attached to the start button.
@@ -130,11 +131,17 @@ public class VOIP_Gui extends JFrame{
 					label_three.setText("Running");
 					label_three.setForeground(Color.green);
 					button_one.setText("Stop");	
-				} catch (IOException e) {
+				} 
+				
+				catch (IOException e) {
 					label_three.setText("File DNE");
-				} catch (NumberFormatException e){
+				} 
+				
+				catch (NumberFormatException e){
 					label_three.setText("Need Node Number");
-				} catch (LineUnavailableException e) {
+				} 
+				
+				catch (LineUnavailableException e) {
 					// Live on the edge.
 				}
 			}
@@ -151,6 +158,7 @@ public class VOIP_Gui extends JFrame{
 		}// end StartListener.actionPerformed()
 	}// end StartListener
 	
+	
 	/**
 	 * Action listener for the sending button.
 	 * Attached to the send button.
@@ -164,11 +172,17 @@ public class VOIP_Gui extends JFrame{
 					label_five.setText("Sending");
 					label_five.setForeground(Color.green);
 					button_two.setText("Stop Sending");
-				} catch (NumberFormatException e) {
+				} 
+				
+				catch (NumberFormatException e) {
 					// Live on the edge.
-				} catch (IOException e) {
+				} 
+				
+				catch (IOException e) {
 					// Live on the edge.
-				} catch (LineUnavailableException e) {
+				} 
+				
+				catch (LineUnavailableException e) {
 					// Live on the edge.
 				}
 			}
@@ -178,12 +192,15 @@ public class VOIP_Gui extends JFrame{
 					label_five.setText("Not Sending");
 					label_five.setForeground(Color.red);
 					button_two.setText("Begin Sending");
-				} catch (InterruptedException e) {
+				} 
+				
+				catch (InterruptedException e) {
 					// Live on the edge.
 				}
 			}
 		} // end TransmitListener.actionPerformed()
 	}// end TransmitListener()		
+	
 	
 		/**
 		 * Runs the Gui. Constructs the complementary variables, etc.
