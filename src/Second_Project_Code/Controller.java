@@ -42,8 +42,8 @@ public class Controller{
 	public static void main(String[] args) throws InterruptedException,
 											IOException, LineUnavailableException{
 		
-		Node node = new Node();
-		node.setup("/home/ian/Documents/configuration", 1);
+		System.out.println(ConfigReader.getLines("/home/ian/Documents/config.txt"));
+		System.out.println(ConfigReader.getLines("/home/ian/Documents/config.txt"));
 		
 	} // end main()
 	

@@ -43,7 +43,7 @@ public class VOIP_Gui extends JFrame{
 	private StartListener Starter;
 	
 	// Node variables
-	private Node node;
+	private Node node = new Node();
 	
 	
 	/**
@@ -124,9 +124,7 @@ public class VOIP_Gui extends JFrame{
 	public class StartListener implements ActionListener{
 		public void actionPerformed(ActionEvent event){
 			if(button_one.getText() == "Start"){
-				node = new Node();
 				try {
-					System.out.println(text_field_config_file.getText());
 					node.setup(text_field_config_file.getText(), Integer.parseInt(text_field_home_node.getText()));
 					node.startReceiving();
 					label_three.setText("Running");

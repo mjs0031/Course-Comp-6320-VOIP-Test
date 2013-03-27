@@ -158,7 +158,7 @@ public class SocketReceiver implements Runnable{
 				}
 			}
 		} // end while
-		System.out.println("I'm Done");
+		s.close();
 	} // end SocketReceiver.run()
 
 	

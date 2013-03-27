@@ -145,12 +145,9 @@ public class Node{
 	 * @throws IOException	: General IOException for if the file is not found.
 	 */
 	public void setup(String fileLoc, int nodeNumber) throws IOException{
-		ConfigReader reader = new ConfigReader();
-		ArrayList<String> lines = reader.getLines(fileLoc.trim());
+		ArrayList<String> lines = ConfigReader.getLines(fileLoc);
 		ArrayList<Node> otherNodes = new ArrayList<Node>();
 		ArrayList<Integer> toBeLinked = new ArrayList<Integer>();
-		
-		System.out.println("FileLoc :: "+fileLoc);
 				
 		int number, port, x, y;
 		String address;
@@ -219,7 +216,7 @@ public class Node{
 	 * @throws IOException				: General IOException
 	 * @throws LineUnavailableException	: General LineUnavailableException
 	 */
-	public void startReceiving() throws IOException, LineUnavailableException{
+	public void startReceiving() throws LineUnavailableException, IOException{
 		receiver = new SocketReceiver(address, port, number, links);
 		receiverThread = new Thread(receiver);
 		receiverThread.start();
