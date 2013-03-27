@@ -40,15 +40,18 @@ public class ConfigReader{
 	 * @return					: An array holding all the lines in the file.
 	 * @throws IOException 		: IOException is thrown if file does not exist.
 	 */
-	public static ArrayList<String> getLines(String fileLoc) throws IOException{
+	public ArrayList<String> getLines(String fileLoc) throws IOException{
 		ArrayList<String> lines = new ArrayList<String>();
-		Scanner reader = new Scanner(new File(fileLoc));
+		File new_file = new File(fileLoc);
+		Scanner reader = new Scanner(new_file);
 		
 		while(reader.hasNext()){
 			lines.add(reader.nextLine());
 		} // end while
 		
 		reader.close();
+		reader   = null;
+		new_file = null;
 		
 		return lines;
 	} // end getLines()

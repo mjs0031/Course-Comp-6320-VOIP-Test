@@ -145,9 +145,13 @@ public class Node{
 	 * @throws IOException	: General IOException for if the file is not found.
 	 */
 	public void setup(String fileLoc, int nodeNumber) throws IOException{
-		ArrayList<String> lines = ConfigReader.getLines(fileLoc);
+		ConfigReader reader = new ConfigReader();
+		ArrayList<String> lines = reader.getLines(fileLoc.trim());
 		ArrayList<Node> otherNodes = new ArrayList<Node>();
 		ArrayList<Integer> toBeLinked = new ArrayList<Integer>();
+		
+		System.out.println("FileLoc :: "+fileLoc);
+				
 		int number, port, x, y;
 		String address;
 		
