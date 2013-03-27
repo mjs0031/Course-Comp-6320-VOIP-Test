@@ -126,6 +126,7 @@ public class VOIP_Gui extends JFrame{
 			if(button_one.getText() == "Start"){
 				node = new Node();
 				try {
+					System.out.println(text_field_config_file.getText());
 					node.setup(text_field_config_file.getText(), Integer.parseInt(text_field_home_node.getText()));
 					node.startReceiving();
 					label_three.setText("Running");

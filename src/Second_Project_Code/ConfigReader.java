@@ -4,9 +4,11 @@ package Second_Project_Code;
 // Java Package Support //
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 // Internal Package Support //
 // { Not Applicable }
@@ -29,7 +31,6 @@ import java.util.ArrayList;
  * for setting up the network.
  *  
  */
-
 public class ConfigReader{
 	
 	/**
@@ -40,13 +41,11 @@ public class ConfigReader{
 	 * @throws IOException 		: IOException is thrown if file does not exist.
 	 */
 	public static ArrayList<String> getLines(String fileLoc) throws IOException{
-		File file = new File(fileLoc);
 		ArrayList<String> lines = new ArrayList<String>();
-		String line;
-		BufferedReader reader = new BufferedReader(new FileReader(file));
+		Scanner reader = new Scanner(new File(fileLoc));
 		
-		while((line = reader.readLine()) != null){
-			lines.add(line);
+		while(reader.hasNext()){
+			lines.add(reader.nextLine());
 		} // end while
 		
 		reader.close();
