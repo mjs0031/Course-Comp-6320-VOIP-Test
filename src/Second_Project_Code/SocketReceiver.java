@@ -118,6 +118,7 @@ public class SocketReceiver implements Runnable{
 			catch (IOException e){
 				// empty sub-block		
 			}
+			System.out.println("Hit");
 			int sequence = ((dp.getData()[0] + 128) * 256) + dp.getData()[1] + 128;
 			int source = ((dp.getData()[2] + 128) * 256) + dp.getData()[3] + 128;
 			int destination = ((dp.getData()[4] + 128) * 256) + dp.getData()[5] + 128;
@@ -126,6 +127,7 @@ public class SocketReceiver implements Runnable{
 				running = false;
 			}
 			else if (destination == number){
+				System.out.println("Honey I'm Home");
 				this.sLine.write(this.dp.getData(), 0, this.dp.getLength());
 			}
 			else if (source != number){
