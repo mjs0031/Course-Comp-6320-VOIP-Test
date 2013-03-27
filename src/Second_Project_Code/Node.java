@@ -156,7 +156,8 @@ public class Node{
 			String[] parts = lines.get(i).split("\\s+");
 			if(nodeNumber == Integer.parseInt(parts[1])){
 				this.number = Integer.parseInt(parts[1]);
-				this.address = parts[2].replace(",", "");
+				this.address = parts[2].substring(0, parts[2].length()-1);
+				//this.address = parts[2].replace(",", "");
 				this.port = Integer.parseInt(parts[3]);
 				this.x = Integer.parseInt(parts[4]);
 				this.y = Integer.parseInt(parts[5]);
@@ -166,7 +167,7 @@ public class Node{
 			} // end if
 			else{
 				number = Integer.parseInt(parts[1]);
-				address = parts[2];
+				address = parts[2].substring(0, parts[2].length()-1);
 				port = Integer.parseInt(parts[3]);
 				x = Integer.parseInt(parts[4]);
 				y = Integer.parseInt(parts[5]);

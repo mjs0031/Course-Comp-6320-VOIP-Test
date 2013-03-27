@@ -165,7 +165,7 @@ public class SocketSender implements Runnable{
 					nextAddress = InetAddress.getByName(linkedNodes.get(i).getAddress());
 				}// end try
 				catch (UnknownHostException e1) {
-					e1.printStackTrace();
+					// live on the edge
 				}// end catch
 				nextPort = linkedNodes.get(i).getPort();
 				dp = new DatagramPacket(packet, packet.length, nextAddress, nextPort);

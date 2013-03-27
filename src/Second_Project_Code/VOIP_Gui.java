@@ -159,14 +159,28 @@ public class VOIP_Gui extends JFrame{
 		
 		public void actionPerformed(ActionEvent event){
 			if(button_two.getText() == "Begin Sending"){
-				label_five.setText("Sending");
-				label_five.setForeground(Color.green);
-				button_two.setText("Stop Sending");
+				try {
+					node.startSending(Integer.parseInt(text_field_dest_node.getText()));
+					label_five.setText("Sending");
+					label_five.setForeground(Color.green);
+					button_two.setText("Stop Sending");
+				} catch (NumberFormatException e) {
+					// Live on the edge.
+				} catch (IOException e) {
+					// Live on the edge.
+				} catch (LineUnavailableException e) {
+					// Live on the edge.
+				}
 			}
 			else{
-				label_five.setText("Not Sending");
-				label_five.setForeground(Color.red);
-				button_two.setText("Begin Sending");
+				try {
+					node.stopSending();
+					label_five.setText("Not Sending");
+					label_five.setForeground(Color.red);
+					button_two.setText("Begin Sending");
+				} catch (InterruptedException e) {
+					// Live on the edge.
+				}
 			}
 		} // end TransmitListener.actionPerformed()
 	}// end TransmitListener()		

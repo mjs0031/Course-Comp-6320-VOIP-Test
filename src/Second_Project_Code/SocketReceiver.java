@@ -53,7 +53,7 @@ public class SocketReceiver implements Runnable{
 	String address;
 	int port;
 	ArrayList<Node> nodes;
-	ArrayList<int[]> cache;
+	ArrayList<int[]> cache = new ArrayList<int[]>();
 	
 	/**
 	 * Base constructor.
