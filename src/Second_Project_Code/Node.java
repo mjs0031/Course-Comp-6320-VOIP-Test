@@ -4,6 +4,8 @@ package Second_Project_Code;
 // Java Package Support //
 import java.util.ArrayList;
 import java.io.IOException;
+import java.nio.file.attribute.FileTime;
+
 import javax.sound.sampled.LineUnavailableException;
 
 // Internal Package Support //
@@ -15,7 +17,7 @@ import javax.sound.sampled.LineUnavailableException;
  * 
  * @author(s)	: Ian Middleton, Zach Ogle, Matthew J Swann
  * @version  	: 1.0
- * Last Update	: 2013-03-26
+ * Last Update	: 2013-03-28
  * Update By	: Matthew J Swann
  * 
  * 
@@ -34,6 +36,9 @@ public class Node{
 	
 	String address;
 	
+	String configFileLoc;
+	FileTime configLastModified;
+	
 	ArrayList<Node> links = new ArrayList<Node>();
 	ArrayList<SocketSender> sendRunnables = new ArrayList<SocketSender>();
 	ArrayList<Thread> sendThreads = new ArrayList<Thread>();
@@ -42,6 +47,9 @@ public class Node{
 	SocketReceiver receiver;
 	
 	Thread receiverThread, senderThread;
+	
+	boolean sending;
+	int sendDest;
 	
 	
 	/**
@@ -53,6 +61,8 @@ public class Node{
 		x       = 0;
 		y       = 0;
 		address = "";
+		sending = false;
+		sendDest = 0;
 	} // end Node()
 	
 	
@@ -146,6 +156,22 @@ public class Node{
 		this.y = y;
 	} // end setY()
 	
+	public String getConfigFileLoc(){
+		return configFileLoc;
+	}
+	
+	public void setConfigFileLoc(String fileLoc){
+		configFileLoc = fileLoc;
+	}
+	
+	public boolean isSending(){
+		return sending;
+	}
+	
+	public int getSendDest(){
+		return sendDest;
+	}
+	
 	
 	/**
 	 * Sets up the Node for this execution by reading in the configuration file,
@@ -210,8 +236,16 @@ public class Node{
 				} // end for
 			} // end for
 		} // end if
+		configLastModified = ConfigReader.getLastModified(fileLoc);
+		configFileLoc = fileLoc;
 	} // end setup()
 	
+	public boolean checkForUpdate() throws IOException{
+		if(ConfigReader.getLastModified(configFileLoc).compareTo(configLastModified) != 0){
+			return true;
+		}
+		return false;
+	}
 	
 	/**
 	 * Creates a number of senders equal to the number of links this node has. As each
@@ -225,6 +259,8 @@ public class Node{
 		sender       = new SocketSender(links, number, destNumber);
 		senderThread = new Thread(sender);
 		senderThread.start();
+		sending = true;
+		sendDest = destNumber;
 	} // end startSending()
 	
 	
@@ -236,6 +272,7 @@ public class Node{
 	public void stopSending() throws InterruptedException{
 		sender.terminate();
 		senderThread.join();
+		sending = false;
 	} // end stopSending()
 	
 	

@@ -2,11 +2,12 @@
 package Second_Project_Code;
 
 // Java Package Support //
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -55,6 +56,11 @@ public class ConfigReader{
 		
 		return lines;
 	} // end getLines()
+	
+	public static FileTime getLastModified(String fileLoc) throws IOException{
+		Path file = Paths.get(fileLoc);
+		return Files.getLastModifiedTime(file);
+	}
 	
 } // end FileReader class
 

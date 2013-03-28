@@ -46,6 +46,11 @@ public class VOIP_Gui extends JFrame{
 	// Node variables
 	private Node node = new Node();
 	
+	Object lock = new Object();
+	
+	Updater updater;
+	Thread updaterThread;
+	
 	
 	/**
      * Constructor for the GUI class.
@@ -89,6 +94,9 @@ public class VOIP_Gui extends JFrame{
 		// Control Block
 		this.compile_components();
 		
+		updater = new Updater(node, lock);
+		updaterThread = new Thread(updater);
+		
 	} // end VOIP_Gui()
 	
 	
@@ -126,11 +134,12 @@ public class VOIP_Gui extends JFrame{
 		public void actionPerformed(ActionEvent event){
 			if(button_one.getText() == "Start"){
 				try {
-					node.setup(text_field_config_file.getText(), Integer.parseInt(text_field_home_node.getText()));
-					node.startReceiving();
-					label_three.setText("Running");
-					label_three.setForeground(Color.green);
-					button_one.setText("Stop");	
+						node.setup(text_field_config_file.getText(), Integer.parseInt(text_field_home_node.getText()));
+						node.startReceiving();
+						updaterThread.start();
+						label_three.setText("Running");
+						label_three.setForeground(Color.green);
+						button_one.setText("Stop");
 				} 
 				
 				catch (IOException e) {
@@ -147,7 +156,11 @@ public class VOIP_Gui extends JFrame{
 			}
 			else{
 				try {
-					node.stopReceiving();
+					synchronized(lock){
+						node.stopReceiving();
+						updater.terminate();
+						updaterThread.join();
+					}
 				} catch (InterruptedException e) {
 					// Live on the edge.
 				}
@@ -168,10 +181,12 @@ public class VOIP_Gui extends JFrame{
 		public void actionPerformed(ActionEvent event){
 			if(button_two.getText() == "Begin Sending"){
 				try {
-					node.startSending(Integer.parseInt(text_field_dest_node.getText()));
-					label_five.setText("Sending");
-					label_five.setForeground(Color.green);
-					button_two.setText("Stop Sending");
+					synchronized(lock){
+						node.startSending(Integer.parseInt(text_field_dest_node.getText()));
+						label_five.setText("Sending");
+						label_five.setForeground(Color.green);
+						button_two.setText("Stop Sending");
+					}
 				} 
 				
 				catch (NumberFormatException e) {
@@ -188,10 +203,12 @@ public class VOIP_Gui extends JFrame{
 			}
 			else{
 				try {
-					node.stopSending();
-					label_five.setText("Not Sending");
-					label_five.setForeground(Color.red);
-					button_two.setText("Begin Sending");
+					synchronized(lock){
+						node.stopSending();
+						label_five.setText("Not Sending");
+						label_five.setForeground(Color.red);
+						button_two.setText("Begin Sending");
+					}
 				} 
 				
 				catch (InterruptedException e) {
