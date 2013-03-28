@@ -93,10 +93,7 @@ public class VOIP_Gui extends JFrame{
 		
 		// Control Block
 		this.compile_components();
-		
-		updater = new Updater(node, lock);
-		updaterThread = new Thread(updater);
-		
+	
 	} // end VOIP_Gui()
 	
 	
@@ -136,7 +133,11 @@ public class VOIP_Gui extends JFrame{
 				try {
 						node.setup(text_field_config_file.getText(), Integer.parseInt(text_field_home_node.getText()));
 						node.startReceiving();
+						
+						updater = new Updater(node, lock);
+						updaterThread = new Thread(updater);
 						updaterThread.start();
+						
 						label_three.setText("Running");
 						label_three.setForeground(Color.green);
 						button_one.setText("Stop");

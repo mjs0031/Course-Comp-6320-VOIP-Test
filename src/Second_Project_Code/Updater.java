@@ -33,6 +33,8 @@ public class Updater implements Runnable{
 	Node node;
 	Object lock;
 	boolean running = true;
+	String configFileLoc;
+	int nodeNum;
 	
 	/**
 	 * Base constructor.
@@ -75,7 +77,7 @@ public class Updater implements Runnable{
 			}
 			
 			try {
-				Thread.sleep(5000);
+				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				// Live on the edge.
 			}

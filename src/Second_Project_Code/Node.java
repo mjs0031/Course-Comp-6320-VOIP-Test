@@ -40,8 +40,6 @@ public class Node{
 	FileTime configLastModified;
 	
 	ArrayList<Node> links = new ArrayList<Node>();
-	ArrayList<SocketSender> sendRunnables = new ArrayList<SocketSender>();
-	ArrayList<Thread> sendThreads = new ArrayList<Thread>();
 	
 	SocketSender sender;
 	SocketReceiver receiver;
@@ -192,6 +190,8 @@ public class Node{
 		ArrayList<Node> otherNodes = new ArrayList<Node>();
 		ArrayList<Integer> toBeLinked = new ArrayList<Integer>();
 		
+		links.clear();
+		
 		for(int i=0; i < lines.size(); i++){
 			String[] parts = lines.get(i).split("\\s+");
 			
@@ -238,6 +238,7 @@ public class Node{
 		} // end if
 		configLastModified = ConfigReader.getLastModified(fileLoc);
 		configFileLoc = fileLoc;
+		System.out.println(links.get(0).getNumber());
 	} // end setup()
 	
 	public boolean checkForUpdate() throws IOException{

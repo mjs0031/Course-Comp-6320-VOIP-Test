@@ -53,6 +53,7 @@ public class SocketReceiver implements Runnable{
 	String address;
 	ArrayList<Node> nodes;
 	ArrayList<int[]> cache = new ArrayList<int[]>();
+	byte[] playbuf = new byte[120];
 	
 	/**
 	 * Base constructor.
@@ -128,8 +129,6 @@ public class SocketReceiver implements Runnable{
 				// empty sub-block		
 			}
 			
-			System.out.println("Hit");
-			
 			int sequence    = ((dp.getData()[0] + 128) * 256) + dp.getData()[1] + 128;
 			int source      = ((dp.getData()[2] + 128) * 256) + dp.getData()[3] + 128;
 			int destination = ((dp.getData()[4] + 128) * 256) + dp.getData()[5] + 128;
@@ -141,9 +140,8 @@ public class SocketReceiver implements Runnable{
 			}
 			
 			else if (destination == number){
-				
-				System.out.println("Honey I'm Home");
-				this.sLine.write(this.dp.getData(), 0, this.dp.getLength());
+				System.arraycopy(this.dp.getData(), 8, playbuf, 0, playbuf.length);
+				this.sLine.write(playbuf, 0, playbuf.length);
 			}
 			
 			else if (source != number){
