@@ -62,7 +62,7 @@ public class SocketReceiver implements Runnable{
 	 * @throws LineUnavailable		: General LineUnavailable for package 
 	 * 										functions.
 	 */
-	public SocketReceiver(String address, int port, int number, ArrayList<Node> nodes) throws IOException, LineUnavailableException{
+	public SocketReceiver(Node node, ArrayList<Node> linkedNodes) throws IOException, LineUnavailableException{
 		this.buf    = new byte[128];
 		this.s      = new DatagramSocket(port);
 		this.dp     = new DatagramPacket(buf, buf.length);
@@ -70,10 +70,10 @@ public class SocketReceiver implements Runnable{
 												16, 2, 4, 44100, false);		
 		DataLine.Info sLineInfo = new DataLine.Info(SourceDataLine.class, this.format);
 		this.sLine   = (SourceDataLine)AudioSystem.getLine(sLineInfo);
-		this.nodes   = nodes;
-		this.number  = number;
-		this.address = address;
-		this.port    = port;
+		this.nodes   = linkedNodes;
+		this.number  = node.getNumber();
+		this.address = node.getAddress();
+		this.port    = node.getPort();
 		
 	} // end SocketReceiver()
 	

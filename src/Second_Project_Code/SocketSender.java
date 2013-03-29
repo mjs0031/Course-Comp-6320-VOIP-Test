@@ -62,6 +62,7 @@ public class SocketSender implements Runnable{
 	AudioFormat format;
 	
 	// Transmit Variables
+	Node			node;
 	ArrayList<Node> linkedNodes;
 	DatagramSocket  s;
 	DatagramPacket  dp;
@@ -85,8 +86,9 @@ public class SocketSender implements Runnable{
 	 * @throws LineUnavailable		: General LineUnavailable for package 
 	 * 										functions.
 	 */
-	public SocketSender(ArrayList<Node> nodes, int srcAddress, int destAddress) throws IOException, LineUnavailableException{
-		linkedNodes = nodes;
+	public SocketSender(Node node, ArrayList<Node> linkedNodes, int destNum) throws IOException, LineUnavailableException{
+		this.linkedNodes = linkedNodes;
+		this.node = node;
 		
 		s       = new DatagramSocket();
 		format  = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 44100,
@@ -99,8 +101,8 @@ public class SocketSender implements Runnable{
 		buffer  = new byte[120];
 		
 		sequenceNum      = 0;
-		this.srcAddress  = srcAddress;
-		this.destAddress = destAddress;
+		this.srcAddress  = node.getNumber();
+		this.destAddress = destNum;
 		
 	} // end SocketSender()
 	
@@ -138,6 +140,7 @@ public class SocketSender implements Runnable{
 
 		InetAddress nextAddress = null;
 		int nextPort;
+		int numPacketsDropped = 0;
 		
 		while(running){
 			
@@ -183,15 +186,22 @@ public class SocketSender implements Runnable{
 				
 				nextPort = linkedNodes.get(i).getPort();
 				dp       = new DatagramPacket(packet, packet.length, nextAddress, nextPort);
-				try{
-					s.send(dp);
-					System.out.println("Sending packet: " + (((dp.getData()[0] + 128) * 256) + dp.getData()[1] + 128) + "	" + (((dp.getData()[2] + 128) * 256) + dp.getData()[3] + 128) + "	" + (((dp.getData()[4] + 128) * 256) + dp.getData()[5] + 128) + "	" + (((dp.getData()[6] + 128) * 256) + dp.getData()[7] + 128));
-				}// end try
-				
-				catch (IOException e){
-					// empty sub-block
-				}// end catch
-				
+				if (!PacketDropRate.isPacketDropped(node.getX(), node.getY(), linkedNodes.get(i).getX(), linkedNodes.get(i).getY()))
+				{
+					try{
+						s.send(dp);
+						System.out.println("Sending packet: " + (((dp.getData()[0] + 128) * 256) + dp.getData()[1] + 128) + "	" + (((dp.getData()[2] + 128) * 256) + dp.getData()[3] + 128) + "	" + (((dp.getData()[4] + 128) * 256) + dp.getData()[5] + 128) + "	" + (((dp.getData()[6] + 128) * 256) + dp.getData()[7] + 128));
+					}// end try
+					
+					catch (IOException e){
+						// empty sub-block
+					}// end catch
+				}
+				else
+				{
+					numPacketsDropped++;
+					System.out.println("Packet Dropped For " + linkedNodes.get(i).getNumber());
+				}
 			}// end for
 		}// end while
 	} // end run()		

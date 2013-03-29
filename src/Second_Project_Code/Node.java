@@ -257,7 +257,7 @@ public class Node{
 	 * @throws LineUnavailableException	: General LineUnavailableException
 	 */
 	public void startSending(int destNumber) throws IOException, LineUnavailableException{
-		sender       = new SocketSender(links, number, destNumber);
+		sender       = new SocketSender(this, links, destNumber);
 		senderThread = new Thread(sender);
 		senderThread.start();
 		sending = true;
@@ -284,7 +284,7 @@ public class Node{
 	 * @throws LineUnavailableException	: General LineUnavailableException
 	 */
 	public void startReceiving() throws LineUnavailableException, IOException{
-		receiver       = new SocketReceiver(address, port, number, links);
+		receiver       = new SocketReceiver(this, links);
 		receiverThread = new Thread(receiver);
 		receiverThread.start();
 	} // end startReceiving()
