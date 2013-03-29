@@ -126,6 +126,7 @@ public class SocketSender implements Runnable{
 		fwdAddress = InetAddress.getByName(address);
 		fwdDp      = new DatagramPacket(packet, packet.length, fwdAddress, port);
 		fwdS.send(fwdDp);
+		System.out.println("Forwarding packet: " + (((fwdDp.getData()[0] + 128) * 256) + fwdDp.getData()[1] + 128) + "	" + (((fwdDp.getData()[2] + 128) * 256) + fwdDp.getData()[3] + 128) + "	" + (((fwdDp.getData()[4] + 128) * 256) + fwdDp.getData()[5] + 128) + "	" + (((fwdDp.getData()[6] + 128) * 256) + fwdDp.getData()[7] + 128));
 	} // end forward()
 	
 	

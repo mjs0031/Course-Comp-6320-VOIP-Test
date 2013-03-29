@@ -141,6 +141,7 @@ public class SocketReceiver implements Runnable{
 			
 			else if (destination == number){
 				System.arraycopy(this.dp.getData(), 8, playbuf, 0, playbuf.length);
+				System.out.println("Playing packet: " + (((this.dp.getData()[0] + 128) * 256) + this.dp.getData()[1] + 128) + "	" + (((this.dp.getData()[2] + 128) * 256) + this.dp.getData()[3] + 128) + "	" + (((this.dp.getData()[4] + 128) * 256) + this.dp.getData()[5] + 128) + "	" + (((this.dp.getData()[6] + 128) * 256) + this.dp.getData()[7] + 128));
 				this.sLine.write(playbuf, 0, playbuf.length);
 			}
 			
