@@ -62,11 +62,11 @@ public class SocketSender implements Runnable{
 	AudioFormat format;
 	
 	// Transmit Variables
-	Node			node;
 	ArrayList<Node> linkedNodes;
 	DatagramSocket  s;
 	DatagramPacket  dp;
 	TargetDataLine  tLine;
+	int x, y;
 	
 	// Control Variables
 	boolean running = true;
@@ -86,9 +86,8 @@ public class SocketSender implements Runnable{
 	 * @throws LineUnavailable		: General LineUnavailable for package 
 	 * 										functions.
 	 */
-	public SocketSender(Node node, ArrayList<Node> linkedNodes, int destNum) throws IOException, LineUnavailableException{
+	public SocketSender(int nodeNum, int x, int y, ArrayList<Node> linkedNodes, int destNum) throws IOException, LineUnavailableException{
 		this.linkedNodes = linkedNodes;
-		this.node = node;
 		
 		s       = new DatagramSocket();
 		format  = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 44100,
@@ -101,8 +100,11 @@ public class SocketSender implements Runnable{
 		buffer  = new byte[120];
 		
 		sequenceNum      = 0;
-		this.srcAddress  = node.getNumber();
+		this.srcAddress  = nodeNum;
 		this.destAddress = destNum;
+		
+		this.x = x;
+		this.y = y;
 		
 	} // end SocketSender()
 	
@@ -143,6 +145,7 @@ public class SocketSender implements Runnable{
 		int numPacketsDropped = 0;
 		
 		while(running){
+			System.out.println("sending");
 			
 			// Add sequence number to the packet
 			if(sequenceNum < 65536){
@@ -186,7 +189,7 @@ public class SocketSender implements Runnable{
 				
 				nextPort = linkedNodes.get(i).getPort();
 				dp       = new DatagramPacket(packet, packet.length, nextAddress, nextPort);
-				if (!PacketDropRate.isPacketDropped(node.getX(), node.getY(), linkedNodes.get(i).getX(), linkedNodes.get(i).getY()))
+				if (!PacketDropRate.isPacketDropped(x, y, linkedNodes.get(i).getX(), linkedNodes.get(i).getY()))
 				{
 					try{
 						s.send(dp);

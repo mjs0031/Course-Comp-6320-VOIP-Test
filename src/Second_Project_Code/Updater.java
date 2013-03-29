@@ -65,6 +65,7 @@ public class Updater implements Runnable{
 						}
 						node.stopReceiving();
 						node.setup(node.getConfigFileLoc(), node.getNumber());
+						System.out.println("setup done");
 						node.startReceiving();
 						if(wasSending){
 							node.startSending(node.getSendDest());

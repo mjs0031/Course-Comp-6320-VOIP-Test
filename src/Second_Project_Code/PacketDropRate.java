@@ -4,7 +4,6 @@ import java.util.Random;
 
 public class PacketDropRate
 {
-	int x1, x2, y1, y2;
 	
 	public static boolean isPacketDropped(int x1, int y1, int x2, int y2)
 	{
@@ -16,7 +15,7 @@ public class PacketDropRate
 		}
 		else if (distance <= 90)
 		{
-			if (probability <= 20)
+			if (probability < 20)
 			{
 				return true;
 			}
@@ -27,7 +26,7 @@ public class PacketDropRate
 		}
 		else if (distance <= 100)
 		{
-			if (probability <= 40)
+			if (probability < 40)
 			{
 				return true;
 			}
@@ -38,7 +37,7 @@ public class PacketDropRate
 		}
 		else if (distance <= 110)
 		{
-			if (probability <= 60)
+			if (probability < 60)
 			{
 				return true;
 			}
@@ -49,7 +48,7 @@ public class PacketDropRate
 		}
 		else if (distance < 120)
 		{
-			if (probability <= 80)
+			if (probability < 80)
 			{
 				return true;
 			}
