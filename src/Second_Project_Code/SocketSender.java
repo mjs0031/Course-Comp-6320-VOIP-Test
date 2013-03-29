@@ -153,6 +153,7 @@ public class SocketSender implements Runnable{
 				packet[0]   = (byte)((sequenceNum/256)-128);
 				packet[1]   = (byte)((sequenceNum%256)-128);
 			} // end else
+			sequenceNum++;
 			
 			// Add source address to the packet
 			packet[2] = (byte)((srcAddress/256)-128);
@@ -183,6 +184,7 @@ public class SocketSender implements Runnable{
 				dp       = new DatagramPacket(packet, packet.length, nextAddress, nextPort);
 				try{
 					s.send(dp);
+					System.out.println("Sending packet: " + (((dp.getData()[0] + 128) * 256) + dp.getData()[1] + 128) + "	" + (((dp.getData()[2] + 128) * 256) + dp.getData()[3] + 128) + "	" + (((dp.getData()[4] + 128) * 256) + dp.getData()[5] + 128) + "	" + (((dp.getData()[6] + 128) * 256) + dp.getData()[7] + 128));
 				}// end try
 				
 				catch (IOException e){
