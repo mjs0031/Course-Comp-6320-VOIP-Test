@@ -1,12 +1,10 @@
 //Package Declaration //
 package Second_Project_Code;
 
+//Java Package Support //
 import java.io.IOException;
 
 import javax.sound.sampled.LineUnavailableException;
-
-//Java Package Support //
-// { Not Applicable }
 
 //Internal Package Support //
 // { Not Applicable }
@@ -45,6 +43,9 @@ public class Updater implements Runnable{
 		this.lock = lock;
 	} // end Updater()
 	
+	/**
+	 * Ends the runnable.
+	 */
 	public void terminate(){
 		running = false;
 	}
