@@ -189,8 +189,8 @@ public class SocketSender implements Runnable{
 				
 				nextPort = linkedNodes.get(i).getPort();
 				dp       = new DatagramPacket(packet, packet.length, nextAddress, nextPort);
-				if (!PacketDropRate.isPacketDropped(x, y, linkedNodes.get(i).getX(), linkedNodes.get(i).getY()))
-				{
+				//if (!PacketDropRate.isPacketDropped(x, y, linkedNodes.get(i).getX(), linkedNodes.get(i).getY()))
+				//{
 					try{
 						s.send(dp);
 						System.out.println("Sending packet: " + (((dp.getData()[0] + 128) * 256) + dp.getData()[1] + 128) + "	" + (((dp.getData()[2] + 128) * 256) + dp.getData()[3] + 128) + "	" + (((dp.getData()[4] + 128) * 256) + dp.getData()[5] + 128) + "	" + (((dp.getData()[6] + 128) * 256) + dp.getData()[7] + 128));
@@ -199,12 +199,12 @@ public class SocketSender implements Runnable{
 					catch (IOException e){
 						// empty sub-block
 					}// end catch
-				}
-				else
-				{
-					numPacketsDropped++;
-					System.out.println("Packet Dropped For " + linkedNodes.get(i).getNumber());
-				}
+				//}
+				//else
+				//{
+					//numPacketsDropped++;
+					//System.out.println("Packet Dropped For " + linkedNodes.get(i).getNumber());
+				//}
 			}// end for
 		}// end while
 	} // end run()		
