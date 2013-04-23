@@ -45,6 +45,7 @@ public class SocketReceiver implements Runnable{
 	DatagramPacket dp;
 	DatagramSocket s;
 	SourceDataLine sLine;
+	SocketSender sender;
 	
 	// Control Variables
 	boolean running = true;
@@ -77,6 +78,8 @@ public class SocketReceiver implements Runnable{
 		this.x = x;
 		this.y = y;
 		
+		sender = new SocketSender();
+		
 	} // end SocketReceiver()
 	
 	/**
@@ -92,7 +95,7 @@ public class SocketReceiver implements Runnable{
 		}
 		
 		try {
-			SocketSender.forward(address, port, buffer);
+			sender.forward(address, port, buffer);
 		}
 		
 		catch (IOException e) {
@@ -148,8 +151,10 @@ public class SocketReceiver implements Runnable{
 				}
 			}
 			
-			if (source == 0){
-				running = false;
+			if (sequence == 0){
+				if(source == 0){
+					running = false;
+				}
 			}
 			
 			if (!PacketDropRate.isPacketDropped(x, y, node.getX(), node.getY()) && running)
@@ -165,11 +170,15 @@ public class SocketReceiver implements Runnable{
 							cache.get(count)[2] = sequence;
 							break;
 						}
-						else{
+						else if(sequence == 0){
+							cache.get(count)[2] = 0;
+							trash = true;
+						}else{
 							trash = true;
 						}
 					}
 				}
+				
 				if (count == cache.size()){
 				
 				cache.add(new int[3]);
@@ -195,7 +204,7 @@ public class SocketReceiver implements Runnable{
 						
 						if (nodes.get(count).getNumber() != prevHop){
 							try {
-								SocketSender.forward(nodes.get(count).getAddress(), nodes.get(count).getPort(), buffer);
+								sender.forward(nodes.get(count).getAddress(), nodes.get(count).getPort(), buffer);
 							}	
 						
 							catch (IOException e){

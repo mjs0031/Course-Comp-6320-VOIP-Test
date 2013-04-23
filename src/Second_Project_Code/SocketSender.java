@@ -42,22 +42,6 @@ import javax.sound.sampled.TargetDataLine;
 
 public class SocketSender implements Runnable{
 	
-	//static variables
-	static InetAddress fwdAddress;
-	static DatagramPacket fwdDp;
-	static DatagramSocket fwdS;
-	
-	static{
-		
-		try {
-			fwdS = new DatagramSocket();
-		} 
-		
-		catch (SocketException e) {
-			// bad
-		}
-	}
-	
 	// Audio Variables
 	AudioFormat format;
 	
@@ -75,6 +59,10 @@ public class SocketSender implements Runnable{
 	
 	//Packet Header
 	int sequenceNum, srcAddress, destAddress;
+	
+	public SocketSender() throws SocketException{
+		s       = new DatagramSocket();
+	}
 	
 	/**
 	 * Base constructor.
@@ -99,7 +87,7 @@ public class SocketSender implements Runnable{
 		packet  = new byte[128];
 		buffer  = new byte[120];
 		
-		sequenceNum      = 0;
+		sequenceNum      = 1;
 		this.srcAddress  = nodeNum;
 		this.destAddress = destNum;
 		
@@ -108,13 +96,61 @@ public class SocketSender implements Runnable{
 		
 	} // end SocketSender()
 	
-	
 	/**
 	 * Terminate can be called to terminate execution of the thread. A join should be
 	 * called afterward in order to wait for the thread to finish.
 	 */
 	public void terminate(){
 		running = false;
+		
+		InetAddress nextAddress = null;
+		int nextPort;
+
+		sequenceNum = 0;
+		packet[0]   = (byte)((sequenceNum/256)-128);
+		packet[1]   = (byte)((sequenceNum%256)-128);
+		
+		// Add source address to the packet
+		packet[2] = (byte)((srcAddress/256)-128);
+		packet[3] = (byte)((srcAddress%256)-128);
+		
+		// Add destination address to the packet
+		packet[4] = (byte)((destAddress/256)-128);
+		packet[5] = (byte)((destAddress%256)-128);
+		
+		// Add previous hop to the packet
+		packet[6] = (byte)((srcAddress/256)-128);
+		packet[7] = (byte)((srcAddress%256)-128);
+		
+		for(int i = 0; i < linkedNodes.size(); i++){
+			
+			try {
+				nextAddress = InetAddress.getByName(linkedNodes.get(i).getAddress());
+			}// end try
+			
+			catch (UnknownHostException e1) {
+				// live on the edge
+			}// end catch
+			
+			nextPort = linkedNodes.get(i).getPort();
+			dp       = new DatagramPacket(packet, packet.length, nextAddress, nextPort);
+			//if (!PacketDropRate.isPacketDropped(x, y, linkedNodes.get(i).getX(), linkedNodes.get(i).getY()))
+			//{
+				try{
+					s.send(dp);
+					System.out.println("Sending packet: " + (((dp.getData()[0] + 128) * 256) + dp.getData()[1] + 128) + "	" + (((dp.getData()[2] + 128) * 256) + dp.getData()[3] + 128) + "	" + (((dp.getData()[4] + 128) * 256) + dp.getData()[5] + 128) + "	" + (((dp.getData()[6] + 128) * 256) + dp.getData()[7] + 128));
+				}// end try
+				
+				catch (IOException e){
+					// empty sub-block
+				}// end catch
+			//}
+			//else
+			//{
+				//numPacketsDropped++;
+				//System.out.println("Packet Dropped For " + linkedNodes.get(i).getNumber());
+			//}
+		}// end for
 	} // end terminate()
 	
 	
@@ -126,11 +162,11 @@ public class SocketSender implements Runnable{
 	 * @param packet		: The packet to be sent.
 	 * @throws IOException	: General IOException.
 	 */
-	public static void forward(String address, int port, byte[] packet) throws IOException{
-		fwdAddress = InetAddress.getByName(address);
-		fwdDp      = new DatagramPacket(packet, packet.length, fwdAddress, port);
-		fwdS.send(fwdDp);
-		System.out.println("Forwarding packet: " + (((fwdDp.getData()[0] + 128) * 256) + fwdDp.getData()[1] + 128) + "	" + (((fwdDp.getData()[2] + 128) * 256) + fwdDp.getData()[3] + 128) + "	" + (((fwdDp.getData()[4] + 128) * 256) + fwdDp.getData()[5] + 128) + "	" + (((fwdDp.getData()[6] + 128) * 256) + fwdDp.getData()[7] + 128));
+	public void forward(String address, int port, byte[] packet) throws IOException{
+		InetAddress fwdAddress = InetAddress.getByName(address);
+		dp      = new DatagramPacket(packet, packet.length, fwdAddress, port);
+		s.send(dp);
+		System.out.println("Forwarding packet: " + (((dp.getData()[0] + 128) * 256) + dp.getData()[1] + 128) + "	" + (((dp.getData()[2] + 128) * 256) + dp.getData()[3] + 128) + "	" + (((dp.getData()[4] + 128) * 256) + dp.getData()[5] + 128) + "	" + (((dp.getData()[6] + 128) * 256) + dp.getData()[7] + 128));
 	} // end forward()
 	
 	
@@ -139,14 +175,11 @@ public class SocketSender implements Runnable{
 	 */
 	@Override
 	public void run(){	
-
 		InetAddress nextAddress = null;
 		int nextPort;
-		int numPacketsDropped = 0;
+		//int numPacketsDropped = 0;
 		
-		while(running){
-			System.out.println("sending");
-			
+		while(running){			
 			// Add sequence number to the packet
 			if(sequenceNum < 65536){
 				
@@ -156,7 +189,7 @@ public class SocketSender implements Runnable{
 			
 			else{
 				
-				sequenceNum = 0;
+				sequenceNum = 1;
 				packet[0]   = (byte)((sequenceNum/256)-128);
 				packet[1]   = (byte)((sequenceNum%256)-128);
 			} // end else
