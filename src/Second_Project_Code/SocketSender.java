@@ -21,7 +21,7 @@ import javax.sound.sampled.TargetDataLine;
 
 /**
 * 
-* Second_Project_Code/SocketSender.java
+* Project2/SocketSender.java
 * 
 * @author(s)	: Ian Middleton, Zach Ogle, Matthew J Swann
 * @version  	: 2.0

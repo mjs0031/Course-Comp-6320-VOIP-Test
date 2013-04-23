@@ -4,7 +4,6 @@ package Second_Project_Code;
 // Java Package Support //
 import java.util.ArrayList;
 import java.io.IOException;
-import java.nio.file.attribute.FileTime;
 
 import javax.sound.sampled.LineUnavailableException;
 
@@ -13,7 +12,7 @@ import javax.sound.sampled.LineUnavailableException;
 
 /**
  * 
- * Second_Project_Code/Node.java
+ * Project2/Node.java
  * 
  * @author(s)	: Ian Middleton, Zach Ogle, Matthew J Swann
  * @version  	: 1.0
@@ -37,7 +36,7 @@ public class Node{
 	String address;
 	
 	String configFileLoc;
-	FileTime configLastModified;
+	long configLastModified;
 	
 	ArrayList<Node> links = new ArrayList<Node>();
 	
@@ -242,7 +241,7 @@ public class Node{
 	} // end setup()
 	
 	public boolean checkForUpdate() throws IOException{
-		if(ConfigReader.getLastModified(configFileLoc).compareTo(configLastModified) != 0){
+		if(ConfigReader.getLastModified(configFileLoc) != configLastModified){
 			return true;
 		}
 		return false;

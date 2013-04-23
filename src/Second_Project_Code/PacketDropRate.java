@@ -14,7 +14,7 @@ import java.util.Random;
  * @author(s)	: Ian Middleton, Zach Ogle, Matthew J Swann
  * @version  	: 1.0
  * Last Update	: 2013-03-28
- * Update By	: Matthew J Swann
+ * Update By	: Ian R Middleton
  * 
  * 
  * Second_Project_Code PACKAGE :: Source code for Comp 6360: Wireless & Mobile Networks

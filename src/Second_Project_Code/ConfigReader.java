@@ -4,10 +4,6 @@ package Second_Project_Code;
 // Java Package Support //
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -16,11 +12,11 @@ import java.util.Scanner;
 
 /**
  * 
- * Second_Project_Code/FileReader.java
+ * Second_Project_Code/ConfigReader.java
  * 
  * @author(s)	: Ian Middleton, Zach Ogle, Matthew J Swann
  * @version  	: 1.0
- * Last Update	: 2013-03-26
+ * Last Update	: 2013-03-28
  * Update By	: Ian R Middleton
  * 
  * 
@@ -57,9 +53,9 @@ public class ConfigReader{
 		return lines;
 	} // end getLines()
 	
-	public static FileTime getLastModified(String fileLoc) throws IOException{
-		Path file = Paths.get(fileLoc);
-		return Files.getLastModifiedTime(file);
+	public static long getLastModified(String fileLoc) throws IOException{
+		File file = new File(fileLoc);
+		return file.lastModified();
 	}
 	
 } // end FileReader class

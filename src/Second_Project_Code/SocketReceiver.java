@@ -19,7 +19,7 @@ import java.util.ArrayList;
 
 /**
 * 
-* Second_Project_Code/SocketReceiver.java
+* Project2/SocketReceiver.java
 * 
 * @author(s)	: Ian Middleton, Zach Ogle, Matthew J Swann
 * @version  	: 1.0
@@ -110,6 +110,8 @@ public class SocketReceiver implements Runnable{
 	 */
 	@Override
 	public void run(){
+	
+		boolean trash = false;
 		try {
 			this.sLine.open(this.format);
 		}
@@ -146,39 +148,43 @@ public class SocketReceiver implements Runnable{
 				}
 			}
 			
-			if (!PacketDropRate.isPacketDropped(x, y, node.getX(), node.getY()))
+			if (source == 0){
+				running = false;
+			}
+			
+			if (!PacketDropRate.isPacketDropped(x, y, node.getX(), node.getY()) && running)
 			{
-				if (source == 0){
-					
-					running = false;
+
+				int count;
+				
+				for (count = 0; count < cache.size(); count++){
+			
+					if (cache.get(count)[0] == source && cache.get(count)[1] == destination){
+				
+						if (cache.get(count)[2] < sequence){
+							cache.get(count)[2] = sequence;
+							break;
+						}
+						else{
+							trash = true;
+						}
+					}
+				}
+				if (count == cache.size()){
+				
+				cache.add(new int[3]);
+				cache.get(count)[0] = source;
+				cache.get(count)[1] = destination;
+				cache.get(count)[2] = sequence;
 				}
 			
-				else if (destination == number){
+				if (destination == number & !trash){
 					System.arraycopy(this.dp.getData(), 8, playbuf, 0, playbuf.length);
 					System.out.println("Playing packet: " + (((this.dp.getData()[0] + 128) * 256) + this.dp.getData()[1] + 128) + "	" + (((this.dp.getData()[2] + 128) * 256) + this.dp.getData()[3] + 128) + "	" + (((this.dp.getData()[4] + 128) * 256) + this.dp.getData()[5] + 128) + "	" + (((this.dp.getData()[6] + 128) * 256) + this.dp.getData()[7] + 128));
 					this.sLine.write(playbuf, 0, playbuf.length);
 				}
 			
-				else if (source != number){
-			
-					int count;
-				
-					for (count = 0; count < cache.size(); count++){
-				
-						if (cache.get(count)[0] == source){
-					
-							if (cache.get(count)[1] < sequence){
-								cache.get(count)[1] = sequence;
-							}
-							break;
-						}
-					}
-					if (count == cache.size()){
-					
-					cache.add(new int[2]);
-					cache.get(count)[0] = source;
-					cache.get(count)[1] = sequence;
-					}
+				else if (source != number && !trash){
 				
 				
 					byte[] buffer = dp.getData();
@@ -203,6 +209,7 @@ public class SocketReceiver implements Runnable{
 			{
 				System.out.println("Packet Dropped For " + node.getNumber());
 			}
+			trash = false;
 		} // end while
 		
 		s.close();

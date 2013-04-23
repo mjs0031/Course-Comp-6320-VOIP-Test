@@ -15,8 +15,8 @@ import javax.sound.sampled.LineUnavailableException;
 * 
 * @author(s)	: Ian Middleton, Zach Ogle, Matthew J Swann
 * @version  	: 2.0
-* Last Update	: 2013-03-26
-* Update By		: Ian R Middleton
+* Last Update	: 2013-03-28
+* Update By	: Ian R Middleton
 * 
 * 
 * Second_Project_Code PACKAGE :: Source code for Comp 6360: Wireless & Mobile Networks
@@ -73,8 +73,12 @@ public class Updater implements Runnable{
 						}
 						System.out.println("Updated!");
 					}
-				} catch (IOException | InterruptedException | LineUnavailableException e) {
+				} catch (IOException e) {
 					// Live on the edge.
+				} catch (InterruptedException e){
+
+				} catch (LineUnavailableException e){
+
 				}
 			}
 			
